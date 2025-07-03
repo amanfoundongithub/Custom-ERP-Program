@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 
 // For binding the pages to the web
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import MainHomePage from './Home/MainPage';
+import MainHomePage from './home/MainPage';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

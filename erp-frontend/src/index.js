@@ -5,17 +5,25 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 // For binding the pages to the web
-import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainHomePage from './home/MainPage';
+import Box from '@mui/material/Box';
+import TopBar from './utils/TopBar';
+import JournalPage from './journal/JournalPage';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
-    <Routes>
-      <Route path = '/home' element = {<MainHomePage />}/> 
-    </Routes>
-  </BrowserRouter>
+  <Box>
+    <TopBar />
+    <BrowserRouter>
+      <Routes>
+        <Route path='/home' element={<MainHomePage />} />
+        <Route path='/journal' element = {<JournalPage />}/>
+      </Routes>
+    </BrowserRouter>
+  </Box>
+
 );
 
 // If you want to start measuring performance in your app, pass a function

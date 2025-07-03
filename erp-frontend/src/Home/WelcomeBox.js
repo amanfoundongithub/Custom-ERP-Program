@@ -3,10 +3,14 @@ import Button from "@mui/material/Button"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import React from "react"
+import {useNavigate} from 'react-router-dom';
 
 
 
 const WelcomeBox = () => {
+
+    // Navigator hook
+    const navigateTo = useNavigate()
 
     return (
         <Box sx={{
@@ -42,11 +46,16 @@ const WelcomeBox = () => {
                         column: '75%',
 
                     }} gap={2}>
+
+
                         <Button variant="outlined" color="success" sx={{
                             transition: 'transform 0.3s ease',
                             '&:hover': {
                                 transform: 'scale(1.1)'
                             }
+                        }} 
+                        onClick={() => {
+                            navigateTo('/journal')
                         }}>
                             ADD A TRANSACTION TO JOURNAL
                         </Button>

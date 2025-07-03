@@ -8,7 +8,6 @@ const MainHomePage = () => {
 
     return(
         <div>
-            <TopBar />
             <Box sx = {{
                 width : '100%',
                 height : '100%',

@@ -26,6 +26,7 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import Alert from "@mui/material/Alert";
 
 
 
@@ -48,18 +49,6 @@ const AddTransactionBox = () => {
         </Box>
     )
 }
-
-function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 
 
 const findTodayDate = () => {
@@ -89,10 +78,8 @@ const AddTransactionButton = () => {
         }
     ])
 
-    // Temporary list 
-    const [edit_list, modifyEditList] = useState([
-        
-    ])
+    // Temporary list to store the edits 
+    const [edit_list, modifyEditList] = useState([...list_of_accounts])
 
     // Controller for controlling the editing of document
     const [edit_account, setEditAccess] = useState(
@@ -137,6 +124,27 @@ const AddTransactionButton = () => {
         })
     }
 
+    const editEntry = (idx, field, value) => {
+        modifyEditList(list => {
+            let updated = [...edit_list]
+            updated[idx] = {
+                ...updated[idx],
+                [field] : value,
+            }
+            return updated
+        })
+    }
+
+    const saveChanges = (idx) => {
+        modifyList(list => {
+            let updated = [...list]
+            updated[idx] = edit_list[idx]
+            console.log(updated)
+            return updated 
+        })
+        disableEditAccess(idx) 
+    }
+
     // Adding a new row => means add the empty and add the edit accounts access
     const addNewRow = () => {
         // New account
@@ -150,7 +158,6 @@ const AddTransactionButton = () => {
         modifyList([...list_of_accounts, new_dummy])
         // Add access modifier to true
         setEditAccess([...edit_account, true])
-
     }
 
 
@@ -163,7 +170,7 @@ const AddTransactionButton = () => {
                 aria-controls="panel1-content"
                 id="panel1-header"
             >
-                <Typography component="span">Click Here to Add Transaction</Typography>
+                <Typography component="span">Click Here to Add Details of Transaction</Typography>
             </AccordionSummary>
             <AccordionDetails>
 
@@ -260,31 +267,31 @@ const AddTransactionButton = () => {
                                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                                 >
                                                     <TableCell component="th" scope="row">
-                                                        <TextField value = {account}
+                                                        <TextField defaultValue = {row.account}
                                                         onChange={(e) => {
-                                                            setAccount(e.target.value) 
+                                                            editEntry(idx, "account", e.target.value) 
                                                         }} />
                                                     </TableCell>
                                                     <TableCell align="right">
-                                                        <Select
-                                                            value = {type}
-                                                            onChange={(e) => {
-                                                                setType(e.target.value)
-                                                            }}
+                                                        <Select defaultValue = {row.type}
+                                                        onChange={(e) => {
+                                                            
+                                                            editEntry(idx, "type", e.target.value) 
+                                                        }}
                                                         >
                                                             <MenuItem value={"Debit"}>Debit</MenuItem>
                                                             <MenuItem value={"Credit"}>Credit</MenuItem>
                                                         </Select>
                                                     </TableCell>
                                                     <TableCell align="right">
-                                                        <TextField value={amount} type="number" 
+                                                        <TextField defaultValue = {row.amount} type="number" 
                                                         onChange={(e) => {
-                                                            setAmount(e.target.value)
+                                                            editEntry(idx, "amount", parseFloat(e.target.value))
                                                         }}/>
                                                     </TableCell>
                                                     <TableCell align="right">
                                                         <IconButton
-                                                            onClick={() => disableEditAccess(idx)}>
+                                                            onClick={() => saveChanges(idx)}>
                                                             <SaveIcon />
                                                         </IconButton>
 
@@ -323,7 +330,7 @@ const AddTransactionButton = () => {
                         <LivePreviewPanel 
                         transactionDate = {transactionDate}
                         description = {description}
-                        list_of_accounts = {list_of_accounts}/>
+                        list_of_accounts = {edit_list}/>
                     </Grid>
                 </Grid>
             </AccordionDetails>
@@ -344,6 +351,13 @@ const LivePreviewPanel = (props) => {
 
     // Combine entries in order: debits first, then credits
     const orderedEntries = [...debits, ...credits];
+    
+    // Sum of solutions 
+    const sumofDebits = debits.reduce((sum, e) => sum = sum + e.amount, 0)
+    const sumofCredits = credits.reduce((sum, e) => sum = sum + e.amount, 0)
+
+    // Valid?
+    const isValid = (sumofCredits === sumofDebits)
 
   return (
     <Box sx={{ p: 4 }}>
@@ -352,6 +366,20 @@ const LivePreviewPanel = (props) => {
           Journal Entry
         </Typography>
 
+        <Box sx= {{
+            mt : 1
+        }}>
+            {
+                isValid ? 
+                <Alert severity = "success">
+                    Journal entry is valid, credit equals debit
+                </Alert>
+                :
+                <Alert severity = "error">
+                    Journal entry is invalid, as Credit = {sumofCredits} & Debit = {sumofDebits}
+                </Alert>
+            }
+        </Box>
         <Table>
           <TableHead>
             <TableRow>

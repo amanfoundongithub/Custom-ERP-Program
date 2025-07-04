@@ -2,6 +2,7 @@ import Box from "@mui/material/Box"
 import CircularProgress from "@mui/material/CircularProgress"
 import Typography from "@mui/material/Typography"
 import React, { useEffect, useState } from "react"
+import WhatIsAJournalBox from "./JournalInfoBox"
 
 const JournalPage = () => {
 
@@ -57,12 +58,17 @@ const JournalPage = () => {
                     display: 'flex',
                     flexDirection: 'row'
                 }}>
-
+                    {/**
+                     * This is the box that is used to show the details 
+                     */}
                     <Box sx={{
                         width: '75%',
-                        height: '100%'
+                        height: '100%',
+                        textAlign : "start"
                     }}>
-                        kijeru
+                        
+                        <WhatIsAJournalBox />
+
                     </Box>
 
                     <Box sx={{

@@ -75,13 +75,6 @@ const JournalPage = () => {
 
                     </Box>
 
-                    {/* <Box sx={{
-                        width: '25%',
-                        height: '100%'
-                    }}>
-                        kijeru
-                    </Box> */}
-
                 </Box>
             </Box>
 

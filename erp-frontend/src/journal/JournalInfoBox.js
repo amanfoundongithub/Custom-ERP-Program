@@ -159,11 +159,6 @@ const WhatIsAJournalBox = () => {
 
             </Box>
 
-            
-            
-
-
-
         </Box>
     )
 }

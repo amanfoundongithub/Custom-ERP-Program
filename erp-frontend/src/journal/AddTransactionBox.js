@@ -1,17 +1,6 @@
 import Box from "@mui/material/Box"
 import Typography from "@mui/material/Typography"
 import Modal from "@mui/material/Modal"
-
-import InfoOutlineIcon from "@mui/icons-material/InfoOutline"
-import CloseIcon from '@mui/icons-material/Close';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CheckIcon from '@mui/icons-material/Check';
-import AddTaskIcon from '@mui/icons-material/AddTask';
-
-import { useState } from "react"
 import IconButton from "@mui/material/IconButton"
 import Button from "@mui/material/Button";
 import Accordion from "@mui/material/Accordion";
@@ -35,6 +24,15 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Checkbox from "@mui/material/Checkbox";
 
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddTaskIcon from '@mui/icons-material/AddTask';
+import WarningIcon from '@mui/icons-material/Warning';
+
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 
 
@@ -69,10 +67,10 @@ const findTodayDate = () => {
 
 
 const isValid = (list_of_accounts) => {
-    
+
     const debits = list_of_accounts.filter(a => a.typeofAcc === "Debit");
     const credits = list_of_accounts.filter(a => a.typeofAcc === "Credit");
-    
+
     // Sum of solutions 
     const sumofDebits = debits.reduce((sum, e) => sum = sum + e.amount, 0)
     const sumofCredits = credits.reduce((sum, e) => sum = sum + e.amount, 0)
@@ -80,7 +78,7 @@ const isValid = (list_of_accounts) => {
     // Valid?
     const notEqual = (sumofCredits === sumofDebits)
     const noCredit = (sumofCredits != 0)
-    const noDebit  = (sumofDebits != 0)
+    const noDebit = (sumofDebits != 0)
 
     return notEqual && noCredit && noDebit
 }
@@ -88,6 +86,7 @@ const isValid = (list_of_accounts) => {
 
 const AddTransactionButton = () => {
 
+    const navigate = useNavigate()
     /**
      * Accounts
      */
@@ -95,13 +94,7 @@ const AddTransactionButton = () => {
     const [description, setDescription] = useState("This is a transaction")
 
     // Controller for getting list of all accounts
-    const [list_of_accounts, modifyList] = useState([
-        {
-            "account": "Purchases",
-            "typeofAcc": "Debit",
-            "amount": 1024.0,
-        }
-    ])
+    const [list_of_accounts, modifyList] = useState([])
 
     // Temporary list to store the edits 
     const [edit_list, modifyEditList] = useState([...list_of_accounts])
@@ -156,12 +149,12 @@ const AddTransactionButton = () => {
     }
 
     const editEntry = (idx, field, value) => {
-        console.log(idx, field, value) 
+        console.log(idx, field, value)
         modifyEditList(list => {
             let updated = [...list]
             updated[idx] = {
                 ...updated[idx],
-                [field] : value,
+                [field]: value,
             }
             return updated
         })
@@ -172,9 +165,9 @@ const AddTransactionButton = () => {
             let updated = [...list]
             updated[idx] = edit_list[idx]
             console.log(updated)
-            return updated 
+            return updated
         })
-        disableEditAccess(idx) 
+        disableEditAccess(idx)
     }
 
     // Adding a new row => means add the empty and add the edit accounts access
@@ -200,287 +193,380 @@ const AddTransactionButton = () => {
     /**
      * Part 2: Confirmation of Transaction
      */
-    const [confirmation, setConfirmation] = useState(false) 
+    const [confirmation, setConfirmation] = useState(false)
+
+    const [confirmSubmission, setConfirmSubmission] = useState(false)
+    const [processing, setProcessing] = useState(false)
+    const [success, setSuccess] = useState(null)
+
+    const actiononConfirmation = () => {
+        setConfirmSubmission(false)
+        setProcessing(true)
+
+        // Post
+        setTimeout(() => {
+            setProcessing(false)
+            setSuccess(true) 
+        }, 3000)
+    }
 
     return (
         <Box>
+
+            <Modal open={confirmSubmission} onClose={() => setConfirmSubmission(false)}>
+                <Box sx={{
+                    position: 'absolute', top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    bgcolor: 'background.paper', p: 4, boxShadow: 24,
+                    borderRadius: 2, width: 400,
+                    display: 'flex', flexDirection: 'column', gap: 2,
+                }}>
+                    <Typography variant = "h5">
+                        Confirm The Transaction
+                    </Typography>
+                    <Typography variant = "subtitle1">
+                        Are you sure you want to post this transaction? 
+                    </Typography>
+                    <Box sx = {{
+                        display : 'flex',
+                    }}>
+                        <WarningIcon sx = {{mt : 1, mr : 1}} color = "warning"/>
+                        <Typography variant = "button" color = "error">
+                            Note : You will NOT be allowed to make
+                            changes once the transaction is submitted!
+                        </Typography>
+                    </Box>
+                    
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                        <Button variant="contained" color = "secondary" onClick={() => setConfirmSubmission(false)}>
+                            No
+                        </Button>
+                        <Button variant = "outlined" color="success" onClick={actiononConfirmation}>
+                            Yes
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
+
+            <Modal open={processing}>
+                <Box sx={{
+                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                    bgcolor: 'rgba(0, 0, 0, 0.9)', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                    color: 'white', fontSize: 24, flexDirection: 'column', gap: 2
+                }}>
+                    <Typography fontFamily = "monospace" variant = "h4">
+                        Please wait while the transaction is being added to the journal...
+                        Do not close or exit the window... 
+                    </Typography>
+                </Box>
+            </Modal>
+
+            <Modal open={success !== null} onClose={() => {
+                setSuccess(null);
+                // navigate("/home");
+            }}>
+                <Box sx={{
+                    position: 'absolute', top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    bgcolor: 'background.paper', p: 4, boxShadow: 24,
+                    borderRadius: 2, width: 400
+                }}>
+                    <Typography variant = "h5" fontFamily = "monospace">
+                        Message From Server
+                    </Typography>
+
+                    <Typography variant = "overline">
+                        {success ? "Transaction Posted Successfully!" : "Transaction Failed!"}
+                    </Typography>
+                    <Button sx={{ mt: 2 }} onClick={() => {
+                        setSuccess(null);
+                        navigate("/home");
+                    }}>OK</Button>
+                </Box>
+            </Modal>
+
             <Accordion>
-            <AccordionSummary sx={{
-                backgroundColor: "lightgreen"
-            }}
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1-content"
-                id="panel1-header"
-            >
-                <Typography component="span" fontFamily = "monospace">
-                    <strong>Step I :</strong>
-                    Add Details of Transaction
-                </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
+                <AccordionSummary sx={{
+                    backgroundColor: "lightgreen"
+                }}
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                >
+                    <Typography component="span" fontFamily="monospace">
+                        <strong>Step I :</strong>
+                        Add Details of Transaction
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
 
-                <Grid container direction="row">
+                    <Grid container direction="row">
 
-                    <Grid item size={6}>
-                        <Typography variant="button">
-                            For the transaction, enter the date & the description of the transaction:
-                        </Typography>
-
-                        <Box sx={{
-                            display: 'flex',
-                            gap: 2,
-                            mt: 2
-                        }}>
-
-                            <TextField label="Date of Transaction" type="date"
-                                value={transactionDate}
-                                onChange={(e) => {
-                                    setDateofTransaction(e.target.value)
-                                }} />
-
-                            <TextField label="Description of Transaction" type="text"
-                                fullWidth
-                                value={description}
-                                onChange={(e) => {
-                                    setDescription(e.target.value)
-                                }} />
-                        </Box>
-
-                        <Typography variant="button">
-                            Enter the account(s) debited/credited in the table below:
-                        </Typography>
-
-                        <TableContainer component={Paper} sx={{
-                            mt: 2
-                        }}>
-                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                <TableHead>
-                                    <TableRow sx={{
-                                        fontWeight: "bold"
-                                    }}>
-                                        <TableCell sx={{ fontWeight: "bold" }}>Account(s) Name</TableCell>
-                                        <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                                            Type (Debit/Credit)
-                                        </TableCell>
-                                        <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                                            Amount (in $)
-                                        </TableCell>
-                                        <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                                            Edit
-                                        </TableCell>
-                                        <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                                            Delete
-                                        </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {list_of_accounts.map((row, idx) => {
-                                        // Check edit access or not
-                                        const access = edit_account[idx]
-
-                                        return (
-                                            access == false ?
-                                                <TableRow
-                                                    key={row.account}
-                                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                                >
-                                                    <TableCell component="th" scope="row">
-                                                        {row.account}
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        {row.typeofAcc}
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        {row.amount}
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <IconButton
-                                                            onClick={() => allowEditAccess(idx)}>
-                                                            <EditIcon />
-                                                        </IconButton>
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <IconButton
-                                                            onClick={() => removeEntry(idx)}>
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                    </TableCell>
-                                                </TableRow>
-                                                :
-                                                <TableRow
-                                                    key={row.account}
-                                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                                >
-                                                    <TableCell component="th" scope="row">
-                                                        <TextField defaultValue = {row.account}
-                                                        onChange={(e) => {
-                                                            editEntry(idx, "account", e.target.value) 
-                                                        }} />
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <Select defaultValue = {row.typeofAcc}
-                                                        onChange={(e) => {
-                                                            
-                                                            editEntry(idx, "typeofAcc", e.target.value) 
-                                                        }}
-                                                        >
-                                                            <MenuItem value={"Debit"}>Debit</MenuItem>
-                                                            <MenuItem value={"Credit"}>Credit</MenuItem>
-                                                        </Select>
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <TextField defaultValue = {row.amount} type="number" 
-                                                        onChange={(e) => {
-                                                            editEntry(idx, "amount", parseFloat(e.target.value))
-                                                        }}/>
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <IconButton
-                                                            onClick={() => saveChanges(idx)}>
-                                                            <SaveIcon />
-                                                        </IconButton>
-
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <IconButton
-                                                            onClick={() => removeEntry(idx)}>
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                    </TableCell>
-                                                </TableRow>
-
-                                        )
-
-                                    })}
-
-                                    <TableRow>
-                                        <TableCell colSpan={5}>
-                                            <Button fullWidth
-                                                onClick={addNewRow}>
-                                                <Typography variant="subtitle1" textAlign="center">
-                                                    + Add New Row
-                                                </Typography>
-                                            </Button>
-                                        </TableCell>
-
-
-
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Grid>
-
-                    <Grid item size={6}> 
-                        <LivePreviewPanel 
-                        transactionDate = {transactionDate}
-                        description = {description}
-                        list_of_accounts = {edit_list}/>
-                    </Grid>
-                </Grid>
-            </AccordionDetails>
-        </Accordion>
-
-        <Accordion>
-            <AccordionSummary sx={{
-                backgroundColor: "lightblue"
-            }}
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2-content"
-                id="panel2-header"
-            >
-                <Typography component="span" fontFamily = "monospace">
-                    <strong>Step II:</strong>
-                    Confirm Transaction 
-                </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-
-                <Grid container direction = "row">
-
-                    <Grid item size = {6}>
-
-                        <Typography variant = "subtitle1">
-                            As a part of the review, review your 
-                            journal entry (from the preview given on the right side) and check for any 
-                        </Typography>
-
-                        <List>
-
-                            <ListItem>
-                                <ListItemIcon>
-                                    <AddTaskIcon />
-                                </ListItemIcon>
-                                <ListItemText primary = "Missing Values" />
-                            </ListItem>
-
-                            <ListItem>
-                                <ListItemIcon>
-                                    <AddTaskIcon />
-                                </ListItemIcon>
-                                <ListItemText primary = "Incorrect Values" />
-                            </ListItem>
-
-                            <ListItem>
-                                <ListItemIcon>
-                                    <AddTaskIcon />
-                                </ListItemIcon>
-                                <ListItemText primary = 
-                                "Equality of credit & debit, as a part of the double entry accounting standards (Refer to the message above the table)" />
-                            </ListItem>
-                        </List>
-
-                        <Typography variant = "subtitle1" mb = {1}>
-                            If any of these is true, you can go back to Step I and edit the transaction
-                            details. The updated details will be reflected in the preview as well.
-                        </Typography>
-
-                        <Box sx = {{
-                            display : 'flex'
-                        }}>
-                            <Checkbox onClick={()=>{
-                                setConfirmation(!confirmation) 
-                            }}/>
-
-                            <Typography>
-                               I hereby confirm that all the details of this transaction are complete, accurate, and true to the best of my knowledge. I affirm that I am the author of this transaction and accept full responsibility for its content and submission. 
+                        <Grid item size={6}>
+                            <Typography variant="button">
+                                For the transaction, enter the date & the description of the transaction:
                             </Typography>
-                        </Box>
 
+                            <Box sx={{
+                                display: 'flex',
+                                gap: 2,
+                                mt: 2
+                            }}>
+
+                                <TextField label="Date of Transaction" type="date"
+                                    value={transactionDate}
+                                    onChange={(e) => {
+                                        setDateofTransaction(e.target.value)
+                                    }} />
+
+                                <TextField label="Description of Transaction" type="text"
+                                    fullWidth
+                                    value={description}
+                                    onChange={(e) => {
+                                        setDescription(e.target.value)
+                                    }} />
+                            </Box>
+
+                            <Typography variant="button">
+                                Enter the account(s) debited/credited in the table below:
+                            </Typography>
+
+                            <TableContainer component={Paper} sx={{
+                                mt: 2
+                            }}>
+                                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                    <TableHead>
+                                        <TableRow sx={{
+                                            fontWeight: "bold"
+                                        }}>
+                                            <TableCell sx={{ fontWeight: "bold" }}>Account(s) Name</TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                                                Type (Debit/Credit)
+                                            </TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                                                Amount (in $)
+                                            </TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                                                Edit
+                                            </TableCell>
+                                            <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                                                Delete
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {list_of_accounts.map((row, idx) => {
+                                            // Check edit access or not
+                                            const access = edit_account[idx]
+
+                                            return (
+                                                access == false ?
+                                                    <TableRow
+                                                        key={row.account}
+                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                    >
+                                                        <TableCell component="th" scope="row">
+                                                            {row.account}
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            {row.typeofAcc}
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            {row.amount}
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            <IconButton
+                                                                onClick={() => allowEditAccess(idx)}>
+                                                                <EditIcon />
+                                                            </IconButton>
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            <IconButton
+                                                                onClick={() => removeEntry(idx)}>
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                    :
+                                                    <TableRow
+                                                        key={row.account}
+                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                    >
+                                                        <TableCell component="th" scope="row">
+                                                            <TextField defaultValue={row.account}
+                                                                onChange={(e) => {
+                                                                    editEntry(idx, "account", e.target.value)
+                                                                }} />
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            <Select defaultValue={row.typeofAcc}
+                                                                onChange={(e) => {
+
+                                                                    editEntry(idx, "typeofAcc", e.target.value)
+                                                                }}
+                                                            >
+                                                                <MenuItem value={"Debit"}>Debit</MenuItem>
+                                                                <MenuItem value={"Credit"}>Credit</MenuItem>
+                                                            </Select>
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            <TextField defaultValue={row.amount} type="number"
+                                                                onChange={(e) => {
+                                                                    editEntry(idx, "amount", parseFloat(e.target.value))
+                                                                }} />
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            <IconButton
+                                                                onClick={() => saveChanges(idx)}>
+                                                                <SaveIcon />
+                                                            </IconButton>
+
+                                                        </TableCell>
+                                                        <TableCell align="right">
+                                                            <IconButton
+                                                                onClick={() => removeEntry(idx)}>
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </TableCell>
+                                                    </TableRow>
+
+                                            )
+
+                                        })}
+
+                                        <TableRow>
+                                            <TableCell colSpan={5}>
+                                                <Button fullWidth
+                                                    onClick={addNewRow}>
+                                                    <Typography variant="subtitle1" textAlign="center">
+                                                        + Add New Row
+                                                    </Typography>
+                                                </Button>
+                                            </TableCell>
+
+
+
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Grid>
+
+                        <Grid item size={6}>
+                            <LivePreviewPanel
+                                transactionDate={transactionDate}
+                                description={description}
+                                list_of_accounts={edit_list} />
+                        </Grid>
+                    </Grid>
+                </AccordionDetails>
+            </Accordion>
+
+            <Accordion>
+                <AccordionSummary sx={{
+                    backgroundColor: "lightblue"
+                }}
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel2-content"
+                    id="panel2-header"
+                >
+                    <Typography component="span" fontFamily="monospace">
+                        <strong>Step II:</strong>
+                        Confirm Transaction
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+
+                    <Grid container direction="row">
+
+                        <Grid item size={6}>
+
+                            <Typography variant="subtitle1">
+                                As a part of the review, review your
+                                journal entry (from the preview given on the right side) and check for any
+                            </Typography>
+
+                            <List>
+
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <AddTaskIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Missing Values" />
+                                </ListItem>
+
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <AddTaskIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Incorrect Values" />
+                                </ListItem>
+
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <AddTaskIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary=
+                                        "Equality of credit & debit, as a part of the double entry accounting standards (Refer to the message above the table)" />
+                                </ListItem>
+                            </List>
+
+                            <Typography variant="subtitle1" mb={1}>
+                                If any of these is true, you can go back to Step I and edit the transaction
+                                details. The updated details will be reflected in the preview as well.
+                            </Typography>
+
+                            <Box sx={{
+                                display: 'flex'
+                            }}>
+                                <Checkbox onClick={() => {
+                                    setConfirmation(!confirmation)
+                                }} />
+
+                                <Typography>
+                                    I hereby confirm that all the details of this transaction are complete, accurate, and true to the best of my knowledge. I affirm that I am the author of this transaction and accept full responsibility for its content and submission.
+                                </Typography>
+                            </Box>
+
+                        </Grid>
+
+                        <Grid item size={6}>
+                            <LivePreviewPanel
+                                transactionDate={transactionDate}
+                                description={description}
+                                list_of_accounts={list_of_accounts} />
+
+                            <Box sx={{
+                                display: 'flex',
+                                alignContent: 'center',
+                                justifyContent: 'center',
+                                gap: 2
+                            }}>
+
+                                <Button variant="outlined" sx={{
+                                    fontFamily: 'sans-serif'
+                                }} color="success"
+                                    disabled={!confirmation || isValid(edit_list) == false}
+                                    onClick={()=> {
+                                        setConfirmSubmission(true) 
+                                    }}
+                                    >
+                                    Confirm Transaction
+                                </Button>
+
+                                <Button variant="outlined" sx={{
+                                    fontFamily: 'sans-serif'
+                                }} color="error">
+                                    Abort Changes
+                                </Button>
+
+                            </Box>
+                        </Grid>
                     </Grid>
 
-                    <Grid item size = {6}>
-                        <LivePreviewPanel 
-                        transactionDate = {transactionDate}
-                        description = {description}
-                        list_of_accounts = {list_of_accounts}/>
-
-                        <Box sx = {{
-                            display : 'flex',
-                            alignContent : 'center',
-                            justifyContent : 'center',
-                            gap : 2
-                        }}>
-
-                            <Button variant = "outlined" sx = {{
-                                fontFamily : 'sans-serif'
-                            }} color = "success"
-                            disabled = {!confirmation || isValid(edit_list) == false}>
-                                Confirm Transaction
-                            </Button>
-
-                            <Button variant = "outlined" sx = {{
-                                fontFamily : 'sans-serif'
-                            }} color = "error">
-                                Abort Changes
-                            </Button>
-
-                        </Box>
-                    </Grid>
-                </Grid>
-
-            </AccordionDetails>
-        </Accordion>
+                </AccordionDetails>
+            </Accordion>
 
         </Box>
     )
@@ -488,8 +574,8 @@ const AddTransactionButton = () => {
 
 const LivePreviewPanel = (props) => {
 
-    const transactionDate  = props.transactionDate
-    const     description  = props.description
+    const transactionDate = props.transactionDate
+    const description = props.description
     const list_of_accounts = props.list_of_accounts
 
     const debits = list_of_accounts.filter(a => a.typeofAcc === "Debit");
@@ -498,7 +584,7 @@ const LivePreviewPanel = (props) => {
 
     // Combine entries in order: debits first, then credits
     const orderedEntries = [...debits, ...credits];
-    
+
     // Sum of solutions 
     const sumofDebits = debits.reduce((sum, e) => sum = sum + e.amount, 0)
     const sumofCredits = credits.reduce((sum, e) => sum = sum + e.amount, 0)
@@ -506,85 +592,85 @@ const LivePreviewPanel = (props) => {
     // Valid?
     const notEqual = (sumofCredits !== sumofDebits)
     const noCredit = (sumofCredits == 0)
-    const noDebit  = (sumofDebits == 0)
+    const noDebit = (sumofDebits == 0)
 
-  return (
-    <Box sx={{ p: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, maxWidth: 700 }}>
-        <Typography variant="h6" gutterBottom>
-          Preview of Journal Entry
-        </Typography>
-
-        <Box sx= {{
-            mt : 1
-        }}>
-            {
-
-                noCredit ? 
-                <Alert severity = "error">
-                    Journal entry is invalid, as there is no Credit 
-                </Alert>
-                :
-                noDebit ?
-                <Alert severity = "error">
-                    Journal entry is invalid, as there is no Debit 
-                </Alert>
-                :
-                notEqual ? 
-                <Alert severity = "error">
-                    Journal entry is invalid, as Credit = {sumofCredits} & Debit = {sumofDebits}
-                </Alert>
-                :
-                <Alert severity = "success">
-                    Journal entry is valid, credit equals debit
-                </Alert>
-                
-            }
-        </Box>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ width: '120px' }}><strong>Date</strong></TableCell>
-              <TableCell><strong>Particulars</strong></TableCell>
-              <TableCell align="right"><strong>Debit</strong></TableCell>
-              <TableCell align="right"><strong>Credit</strong></TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {orderedEntries.map((entry, idx) => (
-              <TableRow key={idx}>
-                <TableCell>
-                  {idx === 0 ? transactionDate : ''}
-                </TableCell>
-                <TableCell sx={{ pl: entry.typeofAcc=== "Credit" ? 4 : 0 }}>
-                  {entry.typeofAcc === "Debit"
-                    ? `${entry.account} A/c Dr.`
-                    : `To ${entry.account} A/c`}
-                </TableCell>
-                <TableCell align="right">
-                  {entry.typeofAcc === "Debit" ? entry.amount.toFixed(2) : ''}
-                </TableCell>
-                <TableCell align="right">
-                  {entry.typeofAcc === "Credit" ? entry.amount.toFixed(2) : ''}
-                </TableCell>
-              </TableRow>
-            ))}
-
-            {/* Narration */}
-            <TableRow>
-              <TableCell />
-              <TableCell colSpan={3}>
-                <Typography sx={{ fontStyle: 'italic', pl: 2 }}>
-                  ({description})
+    return (
+        <Box sx={{ p: 4 }}>
+            <Paper elevation={3} sx={{ p: 3, maxWidth: 700 }}>
+                <Typography variant="h6" gutterBottom>
+                    Preview of Journal Entry
                 </Typography>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </Paper>
-    </Box>
-  );
+
+                <Box sx={{
+                    mt: 1
+                }}>
+                    {
+
+                        noCredit ?
+                            <Alert severity="error">
+                                Journal entry is invalid, as there is no Credit
+                            </Alert>
+                            :
+                            noDebit ?
+                                <Alert severity="error">
+                                    Journal entry is invalid, as there is no Debit
+                                </Alert>
+                                :
+                                notEqual ?
+                                    <Alert severity="error">
+                                        Journal entry is invalid, as Credit = {sumofCredits} & Debit = {sumofDebits}
+                                    </Alert>
+                                    :
+                                    <Alert severity="success">
+                                        Journal entry is valid, credit equals debit
+                                    </Alert>
+
+                    }
+                </Box>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ width: '120px' }}><strong>Date</strong></TableCell>
+                            <TableCell><strong>Particulars</strong></TableCell>
+                            <TableCell align="right"><strong>Debit</strong></TableCell>
+                            <TableCell align="right"><strong>Credit</strong></TableCell>
+                        </TableRow>
+                    </TableHead>
+
+                    <TableBody>
+                        {orderedEntries.map((entry, idx) => (
+                            <TableRow key={idx}>
+                                <TableCell>
+                                    {idx === 0 ? transactionDate : ''}
+                                </TableCell>
+                                <TableCell sx={{ pl: entry.typeofAcc === "Credit" ? 4 : 0 }}>
+                                    {entry.typeofAcc === "Debit"
+                                        ? `${entry.account} A/c Dr.`
+                                        : `To ${entry.account} A/c`}
+                                </TableCell>
+                                <TableCell align="right">
+                                    {entry.typeofAcc === "Debit" ? entry.amount.toFixed(2) : ''}
+                                </TableCell>
+                                <TableCell align="right">
+                                    {entry.typeofAcc === "Credit" ? entry.amount.toFixed(2) : ''}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+
+                        {/* Narration */}
+                        <TableRow>
+                            <TableCell />
+                            <TableCell colSpan={3}>
+                                <Typography sx={{ fontStyle: 'italic', pl: 2 }}>
+                                    ({description})
+                                </Typography>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </Paper>
+        </Box>
+    );
 }
 
 

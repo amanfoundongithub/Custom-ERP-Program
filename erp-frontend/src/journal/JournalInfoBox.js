@@ -119,6 +119,97 @@ const InfoModal = () => {
 };
 
 
+const HowToUseModal = () => {
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    return (
+        <div>
+            <IconButton onClick={handleOpen}>
+                <InfoOutlineIcon />
+            </IconButton>
+
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="info-modal-title"
+                aria-describedby="info-modal-description"
+            >
+                <Box sx={style}>
+                    {/* Close Button */}
+                    <IconButton
+                        onClick={handleClose}
+                        sx={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                        aria-label="close"
+                    >
+                        <CloseIcon />
+                    </IconButton>
+
+                    <Box sx={contentStyle}>
+                        <Typography id="info-modal-title" variant="h5" component="h2" gutterBottom>
+                            📘 How To Convert a Business Transaction into a Journal Entry
+                        </Typography>
+
+                        <Typography variant="body1" sx={{ mb: 2 }}>
+                            A <strong>journal entry</strong> is the first step in recording a financial transaction in accounting. Here’s a simple step-by-step guide to help you transform real-world transactions into formal journal entries.
+                        </Typography>
+
+                        <Typography variant="h6" gutterBottom>
+                            📝 Step-by-Step Guide
+                        </Typography>
+
+                        <ol style={{ paddingLeft: '1.2rem', lineHeight: 1.6 }}>
+                            <li>
+                                <strong>Identify the transaction:</strong> Understand the event. For example: "You sold goods for ₹10,000 cash."
+                            </li>
+                            <li>
+                                <strong>Determine the accounts involved:</strong> Every transaction affects two or more accounts. In our example:
+                                <ul>
+                                    <li>Cash Account (Asset - increases)</li>
+                                    <li>Sales Revenue Account (Income - increases)</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Classify the accounts as Debit or Credit:</strong> Use accounting rules:
+                                <ul>
+                                    <li><strong>Assets ↑ → Debit</strong></li>
+                                    <li><strong>Income ↑ → Credit</strong></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Record the date, debit, credit, and narration in Step I:</strong>
+                                <Box sx={{ backgroundColor: '#f5f5f5', p: 2, mt: 1, borderRadius: 1, fontFamily: 'monospace' }}>
+                                    {`Date: July 1, 2025\nCash A/c Dr.             ₹10,000\n     To Sales Revenue A/c     ₹10,000\n(Being goods sold for cash)`}
+                                </Box>
+                            </li>
+                            <li>
+                                <strong>Ensure debits equal credits:</strong> Double-check totals to maintain the double-entry system, ensuring 
+                                that the credit & debit remains equal.
+                                
+                            </li>
+                            <li>
+                                <strong>Post it in your journal:</strong> Go to Step II, once you are sure all the steps are done and after 
+                                confirming these, you can push these changes to the main journal.
+                            </li>
+                        </ol>
+
+                        <Typography variant="body2" sx={{ mt: 2, fontStyle: 'italic' }}>
+                            Remember: A journal is your first step in the accounting cycle and helps maintain a chronological and balanced record of all financial activities.
+                        </Typography>
+                    </Box>
+                </Box>
+            </Modal>
+        </div>
+    );
+};
+
+
 const WhatIsAJournalBox = () => {
     return (
         <Box sx={{
@@ -151,7 +242,7 @@ const WhatIsAJournalBox = () => {
 
             }}>
 
-                <InfoModal />
+                <HowToUseModal />
 
                 <Typography variant="subtitle1" mt={0.75}>
                     How Do I Add Transaction to Journal?

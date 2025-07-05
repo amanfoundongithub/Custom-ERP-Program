@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography"
 import React, { useEffect, useState } from "react"
 import WhatIsAJournalBox from "./JournalInfoBox"
 import AddTransactionBox from "./AddTransactionBox"
+import ViewJournalBox from "./ViewJournalBox"
 
 const JournalPage = () => {
 
@@ -61,7 +62,7 @@ const JournalPage = () => {
                     width: '100%',
                     height: '100%',
                     display: 'flex',
-                    flexDirection: 'row'
+                    flexDirection: 'row',
                 }}>
                     {/**
                      * This is the box that is used to show the details 
@@ -70,12 +71,13 @@ const JournalPage = () => {
                         width: '100%',
                         height: '100%',
                         textAlign : "start",
-                        gap : 1
                     }}>
                         
                         <WhatIsAJournalBox />
 
                         <AddTransactionBox listofaccnames = {listofaccnames} setListofAccNames = {setListofAccNames}/>
+
+                        <ViewJournalBox />
 
                     </Box>
 

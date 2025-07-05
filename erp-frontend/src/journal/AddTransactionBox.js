@@ -273,7 +273,6 @@ const AddTransactionButton = (props) => {
 
             <Modal open={success !== null} onClose={() => {
                 setSuccess(null);
-                // navigate("/home");
             }}>
                 <Box sx={{
                     position: 'absolute', top: '50%', left: '50%',
@@ -314,8 +313,8 @@ const AddTransactionButton = (props) => {
 
             <Accordion>
                 <AccordionSummary sx={{
-                    backgroundColor: "lightgreen"
-                }}
+                    backgroundColor: "#f59e42"
+                }} 
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1-content"
                     id="panel1-header"
@@ -352,6 +351,7 @@ const AddTransactionButton = (props) => {
                                     onChange={(e) => {
                                         setDescription(e.target.value)
                                     }} />
+
                             </Box>
 
                             <Typography variant="button">
@@ -501,7 +501,7 @@ const AddTransactionButton = (props) => {
 
             <Accordion>
                 <AccordionSummary sx={{
-                    backgroundColor: "lightblue"
+                    backgroundColor: "#45f542"
                 }}
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel2-content"

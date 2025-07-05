@@ -10,9 +10,13 @@ const JournalPage = () => {
     // Loader spinner to load the page, controller for controlling the behavior
     const [pageLoaded, setPageLoader] = useState(false)
 
+    // Get list of all the accounts if possible
+    const [listofaccnames, setListofAccNames] = useState([
+        "Cash", "Purchases", "Sales", "Retained Earnings"
+    ])
+
     // Loading the page 
     useEffect(() => {
-
         // 
         setTimeout(() => {
             setPageLoader(true)   
@@ -71,7 +75,7 @@ const JournalPage = () => {
                         
                         <WhatIsAJournalBox />
 
-                        <AddTransactionBox />
+                        <AddTransactionBox listofaccnames = {listofaccnames} setListofAccNames = {setListofAccNames}/>
 
                     </Box>
 

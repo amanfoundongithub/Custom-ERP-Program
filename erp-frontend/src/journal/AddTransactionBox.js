@@ -33,10 +33,15 @@ import WarningIcon from '@mui/icons-material/Warning';
 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import Autocomplete from "@mui/material/Autocomplete";
 
 
 
-const AddTransactionBox = () => {
+const AddTransactionBox = (props) => {
+
+    let listofaccnames = props.listofaccnames
+    let setListofAccNames = props.setListofAccNames
+
     return (
         <Box sx={{
             display: 'flex',
@@ -48,7 +53,7 @@ const AddTransactionBox = () => {
                 Add A Transaction
             </Typography>
 
-            <AddTransactionButton />
+            <AddTransactionButton listofaccnames={listofaccnames} setListofAccNames={setListofAccNames} />
 
         </Box>
     )
@@ -84,7 +89,11 @@ const isValid = (list_of_accounts) => {
 }
 
 
-const AddTransactionButton = () => {
+const AddTransactionButton = (props) => {
+
+
+    let setListofAccNames = props.setListofAccNames
+    let listofaccnames = props.listofaccnames
 
     const navigate = useNavigate()
     /**
@@ -206,8 +215,8 @@ const AddTransactionButton = () => {
         // Post
         setTimeout(() => {
             setProcessing(false)
-            setSuccess(true) 
-        }, 3000)
+            setSuccess(true)
+        }, 5000)
     }
 
     return (
@@ -221,27 +230,27 @@ const AddTransactionButton = () => {
                     borderRadius: 2, width: 400,
                     display: 'flex', flexDirection: 'column', gap: 2,
                 }}>
-                    <Typography variant = "h5">
+                    <Typography variant="h5">
                         Confirm The Transaction
                     </Typography>
-                    <Typography variant = "subtitle1">
-                        Are you sure you want to post this transaction? 
+                    <Typography variant="subtitle1">
+                        Are you sure you want to post this transaction?
                     </Typography>
-                    <Box sx = {{
-                        display : 'flex',
+                    <Box sx={{
+                        display: 'flex',
                     }}>
-                        <WarningIcon sx = {{mt : 1, mr : 1}} color = "warning"/>
-                        <Typography variant = "button" color = "error">
+                        <WarningIcon sx={{ mt: 1, mr: 1 }} color="warning" />
+                        <Typography variant="button" color="error">
                             Note : You will NOT be allowed to make
                             changes once the transaction is submitted!
                         </Typography>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                        <Button variant="contained" color = "secondary" onClick={() => setConfirmSubmission(false)}>
+                        <Button variant="contained" color="secondary" onClick={() => setConfirmSubmission(false)}>
                             No
                         </Button>
-                        <Button variant = "outlined" color="success" onClick={actiononConfirmation}>
+                        <Button variant="outlined" color="success" onClick={actiononConfirmation}>
                             Yes
                         </Button>
                     </Box>
@@ -255,9 +264,9 @@ const AddTransactionButton = () => {
                     alignItems: 'center', justifyContent: 'center',
                     color: 'white', fontSize: 24, flexDirection: 'column', gap: 2
                 }}>
-                    <Typography fontFamily = "monospace" variant = "h4">
+                    <Typography fontFamily="monospace" variant="h4">
                         Please wait while the transaction is being added to the journal...
-                        Do not close or exit the window... 
+                        Do not close or exit the window...
                     </Typography>
                 </Box>
             </Modal>
@@ -272,17 +281,34 @@ const AddTransactionButton = () => {
                     bgcolor: 'background.paper', p: 4, boxShadow: 24,
                     borderRadius: 2, width: 400
                 }}>
-                    <Typography variant = "h5" fontFamily = "monospace">
+                    <Typography variant="h5" fontFamily="monospace">
                         Message From Server
                     </Typography>
 
-                    <Typography variant = "overline">
-                        {success ? "Transaction Posted Successfully!" : "Transaction Failed!"}
+                    <Typography variant="body2" color={success ? "success" : "error"} fontFamily="monospace">
+                        {success ?
+                            "The transaction has been added successfully to the journal!" :
+                            "The transaction could not be added to the journal!"}
                     </Typography>
-                    <Button sx={{ mt: 2 }} onClick={() => {
-                        setSuccess(null);
-                        navigate("/home");
-                    }}>OK</Button>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: "row-reverse",
+                    }}>
+
+                        <Button sx={{ mt: 2 }} onClick={() => {
+                            setSuccess(null)
+                        }}>
+                            Go Back To Journals
+                        </Button>
+
+                        <Button sx={{ mt: 2 }} onClick={() => {
+                            setSuccess(null);
+                            navigate("/home");
+                        }}>Go Back To Home
+                        </Button>
+
+                    </Box>
+
                 </Box>
             </Modal>
 
@@ -394,10 +420,20 @@ const AddTransactionButton = () => {
                                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                                     >
                                                         <TableCell component="th" scope="row">
-                                                            <TextField defaultValue={row.account}
-                                                                onChange={(e) => {
-                                                                    editEntry(idx, "account", e.target.value)
-                                                                }} />
+                                                            <Autocomplete
+                                                                freeSolo
+                                                                options = {listofaccnames}
+                                                                value = {edit_list[idx]?.account || ""}
+                                                                onChange = {(event, newValue) => {
+                                                                    editEntry(idx, "account", newValue || "");
+                                                                }}
+                                                                onInputChange = {(event, newInputValue) => {
+                                                                    editEntry(idx, "account", newInputValue);
+                                                                }}
+                                                                renderInput = {(params) => (
+                                                                    <TextField {...params} label="Account Name" variant="outlined" />
+                                                                )}
+                                                            />
                                                         </TableCell>
                                                         <TableCell align="right">
                                                             <Select defaultValue={row.typeofAcc}
@@ -548,10 +584,10 @@ const AddTransactionButton = () => {
                                     fontFamily: 'sans-serif'
                                 }} color="success"
                                     disabled={!confirmation || isValid(edit_list) == false}
-                                    onClick={()=> {
-                                        setConfirmSubmission(true) 
+                                    onClick={() => {
+                                        setConfirmSubmission(true)
                                     }}
-                                    >
+                                >
                                     Confirm Transaction
                                 </Button>
 

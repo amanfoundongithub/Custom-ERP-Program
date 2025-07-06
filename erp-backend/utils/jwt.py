@@ -1,5 +1,5 @@
 
-from jose import jwt, JWTError, JOSEError
+from jose import jwt, JWTError, JOSEError, ExpiredSignatureError
 
 from passlib.context import CryptContext
 
@@ -41,3 +41,49 @@ def generate_jwt_token(data : dict, minutes_to_expire : float = None):
         key = SECRET_KEY, 
         algorithm = ALGORITHM
     )
+
+def decode_jwt_token(token : str):
+    """Utility function to decode JWT tokens for authentication 
+
+    Args:
+        token (str): The JWT token to be decoded
+        
+    Returns:
+        A dictionary if the token is successfully decoded 
+    
+    Errors:
+        If the token expires, or is not valid, then the json that is returned will contain not decoded signature 
+    """
+    
+    try: 
+        data = jwt.decode(
+            token = token, 
+            key = SECRET_KEY,
+            algorithms = ALGORITHM
+        )
+        
+        data.update({
+            "decoded" : True 
+        })
+        
+        return data 
+    except JWTError as e:
+        
+        return {
+            "decoded" : False, 
+            "message" : "INVALID_TOKEN"
+        }
+    
+    except ExpiredSignatureError as e:
+        
+        return {
+            "decoded" : False, 
+            "message" : "EXPIRED"
+        }
+    
+    except Exception as e:
+        
+        return {
+            "decoded" : False, 
+            "message" : "MISC_ERROR"
+        }

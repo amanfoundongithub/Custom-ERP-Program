@@ -11,9 +11,8 @@ router = APIRouter(
 )
 
 
-
-@router.post("/start") 
-async def start_my_session(data : SessionInitRequest):
+@router.get("/start") 
+async def start_my_session():
     """ 
     Custom route to define the starting of a session, takes in the data to start the session
     & throws custom error whenever applicable 
@@ -25,10 +24,15 @@ async def start_my_session(data : SessionInitRequest):
     """
     try:
         # Convert the data to dictionary 
-        data_encrypt = data.model_dump() 
+        data_encrypt = {
+            "iat" : datetime.now().timestamp(),
+            "session" : True,
+        }
         
         # Create a signed token
         token = generate_jwt_token(data_encrypt, minutes_to_expire = None)
+        
+        print(token)
         
         # Create a HTTP response
         response = JSONResponse(

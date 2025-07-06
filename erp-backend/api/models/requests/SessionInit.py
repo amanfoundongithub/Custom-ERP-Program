@@ -1,10 +1,7 @@
 from pydantic import BaseModel
 
+
+# Base class to call a session initiation request, need not any body
 class SessionInitRequest(BaseModel):
-    
-    # Name of the organization they are working for 
-    org : str 
-    
-    # 
-    
+    pass 
     

@@ -1,9 +1,15 @@
 import Alert from "@mui/material/Alert"
+import Autocomplete from "@mui/material/Autocomplete"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
+import FormControl from "@mui/material/FormControl"
+import InputLabel from "@mui/material/InputLabel"
 import Link from "@mui/material/Link"
+import Menu from "@mui/material/Menu"
+import MenuItem from "@mui/material/MenuItem"
 import Paper from "@mui/material/Paper"
+import Select from "@mui/material/Select"
 import Step from "@mui/material/Step"
 import StepLabel from "@mui/material/StepLabel"
 import Stepper from "@mui/material/Stepper"
@@ -11,13 +17,17 @@ import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 
 
-import { useState } from "react"
+import { use, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 
 
 const steps = ["Email", "Confirm Email", "Set A Password", "Finish Setup"];
 
 const SignUpPage = () => {
+
+    // Navigator
+    const navigator = useNavigate()
 
     const [activeStep, setActiveStep] = useState(0); // Stepper step 
 
@@ -105,6 +115,21 @@ const SignUpPage = () => {
      * 
      * Controllers : Name, Gender, DOB, Nationality, Phone No
      */
+    const [name, setName] = useState("")
+    const [dateOfBirth, setDOB] = useState("2021-07-06")
+    const [gender, setGender] = useState("Male")
+
+    const [nationality, setNationality] = useState("India") 
+
+    const nationality_options = [
+        "India",
+        "Pakistan",
+        "USA" 
+    ]
+
+    const submitDetails = () => {
+        navigator('/home')
+    }
 
 
     return (
@@ -429,14 +454,62 @@ const SignUpPage = () => {
                                     Finish Setting Up Your Profile
                                 </Typography>
                                 <TextField
-                                    label="Email"
-                                    variant="outlined"
+                                    label = "Your Legal Name"
+                                    variant = "outlined"
+                                    type = "text"
+                                    value = {name}
+                                    onChange={(e) => setName(e.target.value)}  
                                     fullWidth
-                                    type="email"
                                     sx={{ mb: 2 }}
                                 />
-                                <Button variant="contained" color="primary" fullWidth>
-                                    Submit
+                                <Box sx = {{
+                                    display: 'flex',
+                                    gap : 1
+                                }}>
+                                    <TextField
+                                    label = "Your Date of Birth"
+                                    variant = "outlined"
+                                    type = "date"
+                                    value = {dateOfBirth}
+                                    onChange={(e) => setDOB(e.target.value)}  
+                                    fullWidth
+                                    sx={{ mb: 2 }}
+                                />
+
+                                <FormControl fullWidth>
+                                    <Select 
+                                       
+                                        label = "Gender"
+                                        value = {gender}
+                                        onChange={(e) => setGender(e.target.value)}
+                                        
+                                        sx = {{ mb : 2}}
+                                    >
+                                        <MenuItem value = "Male">Male</MenuItem>
+                                        <MenuItem value = "Female">Female</MenuItem>
+                                        <MenuItem value = "Other">Other</MenuItem>
+
+                                    </Select>
+                                </FormControl>
+
+                                </Box>
+
+                                <Autocomplete 
+                                    disablePortal
+                                    options = {nationality_options}
+                                    value = {nationality}
+                                    onChange={(e) => setNationality(e.target.value) }
+                                    sx = {{mb : 2}}
+                                    renderInput = {(params) => <TextField {...params} label = "Nationality" />}
+                                />
+                                
+                                <Button 
+                                variant="contained" 
+                                color="primary" 
+                                fullWidth
+                                onClick={submitDetails}
+                                >
+                                    Submit Details 
                                 </Button>
                             </Box>
 

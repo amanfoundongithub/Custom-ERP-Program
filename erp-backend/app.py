@@ -1,9 +1,7 @@
 
 from fastapi import FastAPI
-
+from api.routes import * 
 
 app = FastAPI()
 
-@app.get("/")
-def hello():
-    return "Hello" 
+app.include_router(router = jwt_router)

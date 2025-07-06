@@ -1,5 +1,5 @@
 
-from jose import jwt, JWTError
+from jose import jwt, JWTError, JOSEError
 
 from passlib.context import CryptContext
 
@@ -13,7 +13,7 @@ COOKIE_NAME = "access_token"
 
 # Now create a method to hash the password 
 pwd_context = CryptContext(schemes = ["bcrypt"],
-                           depreciation = "auto")
+                           deprecated = "auto")
 
 
 def generate_jwt_token(data : dict, minutes_to_expire : float = None):
@@ -25,7 +25,7 @@ def generate_jwt_token(data : dict, minutes_to_expire : float = None):
     """
     
     data_copy = data.copy()
-    expiry_time = datetime.now(timezone.utc) 
+    expires_time = datetime.now(timezone.utc) 
     
     if minutes_to_expire is None: 
         expires_time += timedelta(minutes = ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -33,7 +33,7 @@ def generate_jwt_token(data : dict, minutes_to_expire : float = None):
         expires_time += timedelta(minutes = minutes_to_expire)
         
     data_copy.update({
-        "expiration" : expires_time
+        "expiration" : expires_time.timestamp() 
     })
     
     return jwt.encode(

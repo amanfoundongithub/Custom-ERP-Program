@@ -1,3 +1,4 @@
+import Alert from "@mui/material/Alert"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
@@ -8,11 +9,13 @@ import StepLabel from "@mui/material/StepLabel"
 import Stepper from "@mui/material/Stepper"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
-import { act, use, useState } from "react"
+
+
+import { useState } from "react"
 
 
 
-const steps = ["Email", "Confirm Email", "Verify", "Complete"];
+const steps = ["Email", "Confirm Email", "Set A Password", "Finish Setup"];
 
 const SignUpPage = () => {
 
@@ -51,12 +54,58 @@ const SignUpPage = () => {
     const [sixthBox, setSixthBox] = useState("")
 
     const verifyOTP = () => {
+        console.log(enteredOTP, actualOTP)
         if(parseInt(enteredOTP, 10) == actualOTP) {
             setActiveStep(2) 
         } else {
 
         }
     }
+
+    /**
+     * Third Step: Creation of a Password 
+     * 
+     * Controllers : password, confirm password 
+     */
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setCnfPassword] = useState("")
+
+    const isPasswordEmpty = () => {
+        return password.length === 0
+    }
+
+    const arePasswordsNotEqual = () => {
+        return password !== confirmPassword
+    }
+
+    const isPasswordUnacceptable = () => {
+        return password.length < 8
+    }
+
+    const isPasswordStrong = () => {
+        return password.length >= 8 & confirmPassword.length === 0
+    }
+
+    const isEligibleToCreateAccount = () => {
+        if(isPasswordUnacceptable()){
+            return false
+        }
+        if(arePasswordsNotEqual()){
+            return false 
+        }
+        return true 
+    }
+
+    const createAccount = () => {
+        setActiveStep(3) 
+    }
+
+    /**
+     * Last Step: Take basic details of the user 
+     * 
+     * Controllers : Name, Gender, DOB, Nationality, Phone No
+     */
+
 
     return (
         <Box sx={{
@@ -309,9 +358,75 @@ const SignUpPage = () => {
                                 </Button>
                             </Box> 
                             :
+                            activeStep == 2 ?
                             <Box>
-                                <Typography variant="h6" gutterBottom align="center">
-                                    Login
+                                <Typography variant="h6" gutterBottom align = "left">
+                                    Set up a Password To Protect Your Account
+                                </Typography>
+
+                                <TextField 
+                                label = "Enter a Password"
+                                variant = "filled"
+                                type = "password"
+                                value = {password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                fullWidth
+                                sx = {{
+                                    mb : 1
+                                }}
+                                />
+
+                                <TextField 
+                                label = "Re-enter the Password"
+                                variant = "filled"
+                                value = {confirmPassword}
+                                onChange={(e) => setCnfPassword(e.target.value)}
+                                fullWidth
+                                sx = {{
+                                    mb : 2
+                                }}
+                                />
+
+                                {
+                                    isPasswordEmpty() ?
+                                    <Alert severity = "error">
+                                        Password is empty! Please enter a password!
+                                    </Alert>
+                                    :
+                                    isPasswordUnacceptable() ?
+                                    <Alert severity = "error">Password is weak! Choose a stronger & better password</Alert>
+                                    :
+                                    isPasswordStrong() ?
+                                    <Alert severity = "success">Password looks strong! You can confirm the password!</Alert>
+                                    :
+                                    arePasswordsNotEqual() ?
+                                    <Alert severity = "error">Passwords are not matching!</Alert>
+                                    :
+                                    <Alert severity = "success">Passwords are matching! Click below to create account!</Alert>
+                                }
+
+                                {
+                                    isEligibleToCreateAccount() ?
+                                    <Button 
+                                    variant = "contained"
+                                    color = "warning"
+                                    fullWidth
+                                    onClick={createAccount}
+                                    sx = {{
+                                        mt : 2
+                                    }}>
+                                        Create My Account
+                                    </Button>
+                                    :
+                                    <></>
+                                }
+
+
+                            </Box>
+                            :
+                            <Box>
+                                <Typography variant="h6" gutterBottom align="left">
+                                    Finish Setting Up Your Profile
                                 </Typography>
                                 <TextField
                                     label="Email"

@@ -1,5 +1,3 @@
-import React from "react";
-import TopBar from "../utils/TopBar";
 import Box from "@mui/material/Box";
 import WelcomeBox from "./WelcomeBox";
 

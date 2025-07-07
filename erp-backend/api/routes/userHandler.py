@@ -6,9 +6,9 @@ from api.models.requests import *
 from api.middleware      import *
 
 from utils.jwt           import *
+from utils.password      import *
 
 from db.connection       import user_collection
-from db.models           import UserDB
 
 
 router = APIRouter(
@@ -31,10 +31,13 @@ async def create_user_route(details : UserCreationRequest):
         if verification:
             raise ValueError() 
 
-        # If not, create the user
+        # User password is encrypted for security 
+        user_dict.update({
+            "password" : encrypt_password(user_dict.get("password")) 
+        })
+        
+        # If not, create the user & send it back the created object's id as well 
         result = await user_collection.insert_one(user_dict)
-        
-        
         user_dict["_id"] = result.inserted_id
         
         return JSONResponse(

@@ -9,7 +9,13 @@ from datetime import datetime, timedelta, timezone
 SECRET_KEY = ""
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# Session cookie name
 COOKIE_NAME = "access_token"
+
+# User Cookie 
+COOKIE_USER_ID = "user_token"
+USER_TOKEN_EXPIRE_MINUTES = 120
 
 # Now create a method to hash the password 
 pwd_context = CryptContext(schemes = ["bcrypt"],
@@ -67,6 +73,7 @@ def decode_jwt_token(token : str):
         })
         
         return data 
+    
     except JWTError as e:
         
         return {

@@ -5,9 +5,7 @@ import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
 import CircularProgress from "@mui/material/CircularProgress"
 import FormControl from "@mui/material/FormControl"
-import InputLabel from "@mui/material/InputLabel"
 import Link from "@mui/material/Link"
-import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
 import Paper from "@mui/material/Paper"
 import Select from "@mui/material/Select"
@@ -64,10 +62,6 @@ const SignUpPage = () => {
     const [email, setEmail] = useState("abc@example.com")
     const [confirmEmail, setConfirmEmail] = useState(false)
 
-    const handleEmailValidity = () => {
-        return email.includes("@")
-    }
-
     const sendOTP = () => {
         // Sends OTP to the person via backend 
         fetch("http://localhost:8000/otp/generate", {
@@ -82,7 +76,7 @@ const SignUpPage = () => {
         })
         .then((res) => {
             res.json().then((val) => {
-                console.log(val)
+                setActiveStep(1)
             }) 
         })
         .catch((err) => {
@@ -294,55 +288,12 @@ const SignUpPage = () => {
                     {
                         activeStep == 0
                             ?
-                            <Box>
-                                <Typography variant="h6" gutterBottom align = "left">
-                                    Welcome aboard!
-                                </Typography>
-                                <Typography variant = "subtitle2" gutterBottom>
-                                    The first step of your journey begins with... your email 
-                                    address. Enter your email address that will be used for
-                                    system for correspondence. 
-                                </Typography>
-                                <TextField
-                                    label = "Your Email ID"
-                                    variant = "outlined"
-                                    fullWidth
-                                    type = "email"
-                                    value = {email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    error = {
-                                        handleEmailValidity() == false
-                                    }
-                                    helperText = {
-                                        handleEmailValidity() ? "" : "Enter the correct email"
-                                    }
-                                    sx = {{ 
-                                        mb: 2 
-                                    }}
-                                />
-                                <Box display = "flex" mb = {2}>
-                                    <Checkbox onClick={() => setConfirmEmail(!confirmEmail)}/>
-                                    <Typography mt = {1}>
-                                        I confirm the above as my email address for correspondence
-                                    </Typography>
-                                </Box>
-                                <Button 
-                                variant="contained" 
-                                color = "warning"
-                                disabled = {
-                                    handleEmailValidity() == false || confirmEmail == false
-                                }  
-                                fullWidth
-                                sx = {{
-                                    fontFamily : "monospace"
-                                }}
-                                onClick={() => {
-                                    sendOTP() 
-                                    setActiveStep(1)
-                                }}>
-                                    Verify My Email 
-                                </Button>
-                            </Box>
+                            <StepI 
+                            email = {email} 
+                            setEmail = {setEmail}
+                            confirmEmail = {confirmEmail}
+                            setConfirmEmail = {setConfirmEmail}
+                            sendOTP = {sendOTP}/>
                             :
                             activeStep == 1 
                             ?
@@ -648,6 +599,73 @@ const SignUpPage = () => {
                 </Paper>
             </Box>
 
+        </Box>
+    )
+}
+
+const StepI = (props) => {
+
+    const email = props.email 
+    const setEmail = props.setEmail 
+
+    const confirmEmail = props.confirmEmail
+    const setConfirmEmail = props.setConfirmEmail
+
+    const sendOTP = props.sendOTP
+
+    const handleEmailValidity = () => {
+        return email.includes("@")
+    }
+
+
+    return (
+        <Box>
+            <Typography variant="h6" gutterBottom align="left">
+                Welcome aboard!
+            </Typography>
+            <Typography variant="subtitle2" gutterBottom>
+                The first step of your journey begins with... your email
+                address. Enter your email address that will be used for
+                system for correspondence.
+            </Typography>
+            <TextField
+                label="Your Email ID"
+                variant="outlined"
+                fullWidth
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={
+                    handleEmailValidity() == false
+                }
+                helperText={
+                    handleEmailValidity() ? "" : "Enter the correct email"
+                }
+                sx={{
+                    mb: 2
+                }}
+            />
+            <Box display="flex" mb={2}>
+                <Checkbox onClick={() => setConfirmEmail(!confirmEmail)} />
+                <Typography mt={1}>
+                    I confirm the above as my email address for correspondence
+                </Typography>
+            </Box>
+            <Button
+                variant="contained"
+                color="warning"
+                disabled={
+                    handleEmailValidity() == false || confirmEmail == false
+                }
+                fullWidth
+                sx={{
+                    fontFamily: "monospace"
+                }}
+                onClick={() => {
+                    sendOTP()
+                }}>
+                Verify My Email
+            </Button>
         </Box>
     )
 }

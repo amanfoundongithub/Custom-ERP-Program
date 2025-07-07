@@ -40,12 +40,33 @@ async def create_user_route(details : UserCreationRequest):
         result = await user_collection.insert_one(user_dict)
         user_dict["_id"] = str(result.inserted_id)
         
-        return JSONResponse(
+        # Generate a token to ensure that the user is login
+        user_login_token = {
+            "iat" : datetime.now().timestamp(),
+            "user" : True 
+        }
+        
+        user_login_token = generate_jwt_token(user_login_token, 
+                                              minutes_to_expire = USER_TOKEN_EXPIRE_MINUTES)
+        
+        
+        # Now add to the response
+        response = JSONResponse(
             status_code = 201,
             content = {
                 "message" : jsonable_encoder(user_dict)
             }
         )
+        
+        # Additional cookie to set user, should be permanent of the website 
+        response.set_cookie(
+            key = COOKIE_NAME, 
+            value = user_login_token, 
+            httponly = True, 
+            samesite = "lax",
+            max_age = 60 * ACCESS_TOKEN_EXPIRE_MINUTES)
+        
+        return response
     
     except ValueError as e:
         return JSONResponse(

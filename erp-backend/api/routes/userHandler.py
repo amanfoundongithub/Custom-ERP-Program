@@ -29,7 +29,7 @@ async def create_user_route(details : UserCreationRequest):
         })
         
         if verification:
-            raise Exception("USER_ALREADY_EXISTS")
+            raise ValueError() 
 
         # If not, create the user
         result = await user_collection.insert_one(user_dict)
@@ -43,8 +43,14 @@ async def create_user_route(details : UserCreationRequest):
                 "message" : jsonable_encoder(user_dict)
             }
         )
-        
-        
+    
+    except ValueError as e:
+        return JSONResponse(
+            status_code = 450,
+            content = {
+                "message" : "USER_ALREADY_EXISTS"
+            }
+        )
     except Exception as e:
         return JSONResponse(
             status_code = 500,

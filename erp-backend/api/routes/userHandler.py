@@ -28,7 +28,7 @@ async def create_user_route(details : UserCreationRequest):
             "email" : user_dict.get("email")
         })
         
-        if verification:
+        if verification is not None:
             raise ValueError() 
 
         # User password is encrypted for security 
@@ -38,10 +38,10 @@ async def create_user_route(details : UserCreationRequest):
         
         # If not, create the user & send it back the created object's id as well 
         result = await user_collection.insert_one(user_dict)
-        user_dict["_id"] = result.inserted_id
+        user_dict["_id"] = str(result.inserted_id)
         
         return JSONResponse(
-            status_code = 200,
+            status_code = 201,
             content = {
                 "message" : jsonable_encoder(user_dict)
             }
@@ -61,3 +61,4 @@ async def create_user_route(details : UserCreationRequest):
                 "message" : str(e)
             }
         )
+

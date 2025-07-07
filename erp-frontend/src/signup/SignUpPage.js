@@ -18,7 +18,7 @@ import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 
 
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 
@@ -188,13 +188,56 @@ const SignUpPage = () => {
     const [nationality, setNationality] = useState("India") 
 
     const nationality_options = [
-        "India",
-        "Pakistan",
-        "USA" 
+        {
+            label : "India",
+            id : 0
+        },
+        {
+            label : "Pakistan",
+            id : 1
+        },
+        {
+            label : "USA",
+            id : 2
+        },
+        {
+            label : "England",
+            id : 3
+        },
     ]
 
     const submitDetails = () => {
-        navigator('/home')
+        // Send post request
+        fetch("http://localhost:8000/user/create", {
+            method : "POST",
+            credentials : "include",
+            headers: {
+                "Content-Type" : "application/json"
+            },
+            body : JSON.stringify({
+                email: email,
+                phone: String(9013233244),
+                password: password,
+                legal_name: name,
+                dob: new Date(dateOfBirth).toISOString(),
+                gender: gender,
+                nationality: "India"
+            })
+        })
+        .then((res) => {
+            if(res.status == 201) {
+                alert("Account created!")
+                navigator("/home")
+            } else if(res.status == 450) {
+                alert("Account failed to create; Already exists one")
+            }
+            else {
+                alert("Account failed to create; Server Issue")
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+        })
     }
 
 
@@ -583,6 +626,7 @@ const SignUpPage = () => {
                                     options = {nationality_options}
                                     value = {nationality}
                                     onChange={(e) => setNationality(e.target.value) }
+                                    getOptionLabel={(option) => option.label || ""}
                                     sx = {{mb : 2}}
                                     renderInput = {(params) => <TextField {...params} label = "Nationality" />}
                                 />

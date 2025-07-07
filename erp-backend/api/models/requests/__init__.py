@@ -1,3 +1,4 @@
 
 
-from api.models.requests.SessionInit import SessionInitRequest
+from api.models.requests.SessionInit import *
+from api.models.requests.OTP         import *

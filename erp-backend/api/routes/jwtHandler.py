@@ -32,8 +32,6 @@ async def start_my_session():
         # Create a signed token
         token = generate_jwt_token(data_encrypt, minutes_to_expire = None)
         
-        print(token)
-        
         # Create a HTTP response
         response = JSONResponse(
             status_code = 201, 

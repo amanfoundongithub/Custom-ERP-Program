@@ -3,6 +3,7 @@ import Autocomplete from "@mui/material/Autocomplete"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
+import CircularProgress from "@mui/material/CircularProgress"
 import FormControl from "@mui/material/FormControl"
 import InputLabel from "@mui/material/InputLabel"
 import Link from "@mui/material/Link"
@@ -17,7 +18,7 @@ import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 
 
-import { use, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 
@@ -28,8 +29,32 @@ const SignUpPage = () => {
 
     // Navigator
     const navigator = useNavigate()
-
     const [activeStep, setActiveStep] = useState(0); // Stepper step 
+
+    /**
+     * Config: Get session token
+     */
+    const [loadScreen, setLoadScreen] = useState(false) 
+
+    const getSessionToken = () => {
+        fetch("http://localhost:8000/session/start", {
+            method : "GET",
+            credentials : "include",
+        }) 
+        .then((res) => {
+            if(res.status == 201) {
+                setTimeout(() => {
+                    setLoadScreen(true)
+                }, 4000)
+            } else {
+                alert("Error in getting session")
+            }
+        })
+    }
+
+    useEffect(() => {
+        getSessionToken()
+    }, [])
 
     /**
      * First Step: Getting the email address 
@@ -44,8 +69,25 @@ const SignUpPage = () => {
     }
 
     const sendOTP = () => {
-        // Blah blah
-        setActualOTP(123456)
+        // Sends OTP to the person via backend 
+        fetch("http://localhost:8000/otp/generate", {
+            method : "POST",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            credentials : "include",
+            body : JSON.stringify({
+                email : email 
+            })  
+        })
+        .then((res) => {
+            res.json().then((val) => {
+                console.log(val)
+            }) 
+        })
+        .catch((err) => {
+            console.log(err) 
+        })
     }
 
     /**
@@ -53,7 +95,6 @@ const SignUpPage = () => {
      * 
      * Controllers : actual OTP, input OTP 
      */
-    const [actualOTP, setActualOTP] = useState(0)
     const [enteredOTP, setEnteredOTP] = useState("000000")
 
     const [firstBox, setFirstBox] = useState("")
@@ -64,12 +105,37 @@ const SignUpPage = () => {
     const [sixthBox, setSixthBox] = useState("")
 
     const verifyOTP = () => {
-        console.log(enteredOTP, actualOTP)
-        if(parseInt(enteredOTP, 10) == actualOTP) {
-            setActiveStep(2) 
-        } else {
+        const OTP = parseInt(enteredOTP, 10) 
 
-        }
+        fetch("http://localhost:8000/otp/verify", {
+            method : "POST",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            credentials : "include",
+            body : JSON.stringify({
+                enteredOTP : OTP
+            })  
+        })
+        .then((res) => {
+            if(res.status == 201) {
+                res.json().then((val) => {
+                    if(val.verified == true) {
+                        setActiveStep(2)
+                    } else {
+                        alert("Incorrect OTP, try again!") 
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+            } else {
+                alert("Error in verifying OTP") 
+            }
+        })
+        .catch((err) => {
+            console.log(err) 
+        })
     }
 
     /**
@@ -133,6 +199,24 @@ const SignUpPage = () => {
 
 
     return (
+        loadScreen == false ?
+        <Box sx={{
+            width: '100%',
+            height: '100%'
+        }}>
+            <Box sx = {{
+                display : 'flex',
+                justifyContent : 'center',
+                gap : 2,
+                mt : 4
+            }}>
+                <CircularProgress />
+                <Typography variant = "h5">
+                    Please wait while we connect to server...
+                </Typography>
+            </Box>
+        </Box>
+        :
         <Box sx={{
             width: '100%',
             height: '100%'

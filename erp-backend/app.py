@@ -16,3 +16,4 @@ app.add_middleware(
 
 app.include_router(router = jwt_router)
 app.include_router(router = otp_router)
+app.include_router(router = user_router)

@@ -74,10 +74,8 @@ async def verify_otp_route(body : OTPVerificationRequest, token_data : dict = De
     Status Codes
     ---
         500 : ISE
-        204 : OTP Validation done
+        201 : OTP Validation done
         403 : Authorization Issue
-
-    
     """
     try:
         # If token is not valid, tell the provider to re-generate your token

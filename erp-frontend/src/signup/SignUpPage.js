@@ -20,7 +20,6 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 
-
 const steps = ["Email", "Confirm Email", "Set A Password", "Finish Setup"];
 
 const SignUpPage = () => {
@@ -90,13 +89,6 @@ const SignUpPage = () => {
      * Controllers : actual OTP, input OTP 
      */
     const [enteredOTP, setEnteredOTP] = useState("000000")
-
-    const [firstBox, setFirstBox] = useState("")
-    const [secondBox, setSecondBox] = useState("")
-    const [thirdBox, setThirdBox] = useState("")
-    const [fourthBox, setFourthBox] = useState("")
-    const [fifthBox, setFifthBox] = useState("")
-    const [sixthBox, setSixthBox] = useState("")
 
     const verifyOTP = () => {
         const OTP = parseInt(enteredOTP, 10) 
@@ -286,7 +278,7 @@ const SignUpPage = () => {
                     </Stepper>
 
                     {
-                        activeStep == 0
+                            activeStep == 0
                             ?
                             <StepI 
                             email = {email} 
@@ -297,171 +289,14 @@ const SignUpPage = () => {
                             :
                             activeStep == 1 
                             ?
-                            <Box>
-                                <Typography variant="h6" gutterBottom align = "left">
-                                    Verify your Email!
-                                </Typography>
-                                
-                                <Typography variant = "subtitle2" gutterBottom>
-                                    A 6-digit OTP has been sent to {email}. Please check
-                                    your inbox & enter the OTP below.
-                                </Typography>
-
-                                <Box sx = {{
-                                    display : 'flex',
-                                    gap : 2
-                                }}>
-                                    <TextField variant = "standard" type = "text" value = {firstBox} inputMode = "numeric"
-                                    onChange={(e) => {
-                                        let val = e.target.value
-                                        val = parseInt(val)
-                                        console.log(val)
-                                        if(val >= 0 && val < 10) { 
-                                            let otp = enteredOTP.split("")
-                                            otp[0] = val.toString() 
-                                            console.log(otp) 
-                                            setEnteredOTP(otp.join("")) 
-                                            console.log(enteredOTP)
-                                            setFirstBox(val) 
-                                        } else {
-                                            setFirstBox("")
-                                        }
-                                    }}
-                                    
-                                    sx = {{
-                                        input : {
-                                            textAlign : 'center'
-                                        }
-                                    }}/>
-
-                                    <TextField variant = "standard" type = "text" value = {secondBox} inputMode = "numeric"
-                                    onChange={(e) => {
-                                        let val = e.target.value
-                                        val = parseInt(val)
-                                        console.log(val)
-                                        if(val >= 0 && val < 10) {
-                                            console.log(val) 
-                                            let otp = enteredOTP.split("")
-                                            otp[1] = val.toString() 
-                                            setEnteredOTP(otp.join("")) 
-                                            console.log(otp)
-                                            setSecondBox(val) 
-                                        } else {
-                                            setSecondBox("")
-                                        }
-                                    }}
-                                    
-                                    sx = {{
-                                        input : {
-                                            textAlign : 'center'
-                                        }
-                                    }}/>
-                                    
-                                    <TextField variant = "standard" type = "text" value = {thirdBox} inputMode = "numeric"
-                                    onChange={(e) => {
-                                        let val = e.target.value
-                                        val = parseInt(val)
-                                        console.log(val)
-                                        if(val >= 0 && val < 10) {
-                                            let otp = enteredOTP.split("")
-                                            otp[2] = val.toString() 
-                                            setEnteredOTP(otp.join(""))  
-                                            console.log(enteredOTP)
-                                            setThirdBox(val) 
-                                        } else {
-                                            setThirdBox("")
-                                        }
-                                    }}
-                                    
-                                    sx = {{
-                                        input : {
-                                            textAlign : 'center'
-                                        }
-                                    }}/>
-
-                                    <TextField variant = "standard" type = "text" value = {fourthBox} inputMode = "numeric"
-                                    onChange={(e) => {
-                                        let val = e.target.value
-                                        val = parseInt(val)
-                                        console.log(val)
-                                        if(val >= 0 && val < 10) {
-                                            let otp = enteredOTP.split("")
-                                            otp[3] = val.toString() 
-                                            setEnteredOTP(otp.join("")) 
-                                            console.log(enteredOTP)
-                                            setFourthBox(val) 
-                                        } else {
-                                            setFourthBox("")
-                                        }
-                                    }}
-                                    
-                                    sx = {{
-                                        input : {
-                                            textAlign : 'center'
-                                        }
-                                    }}/>
-
-                                    <TextField variant = "standard" type = "text" value = {fifthBox} inputMode = "numeric"
-                                    onChange={(e) => {
-                                        let val = e.target.value
-                                        val = parseInt(val)
-                                        console.log(val)
-                                        if(val >= 0 && val < 10) {
-                                            let otp = enteredOTP.split("")
-                                            otp[4] = val.toString() 
-                                            setEnteredOTP(otp.join("")) 
-                                            console.log(enteredOTP)
-                                            setFifthBox(val) 
-                                        } else {
-                                            setFifthBox("")
-                                        }
-                                    }}
-                                    
-                                    sx = {{
-                                        input : {
-                                            textAlign : 'center'
-                                        }
-                                    }}/>
-
-                                    <TextField variant = "standard" type = "text" value = {sixthBox} inputMode = "numeric"
-                                    onChange={(e) => {
-                                        let val = e.target.value
-                                        val = parseInt(val)
-                                        console.log(val)
-                                        if(val >= 0 && val < 10) {
-                                            let otp = enteredOTP.split("")
-                                            otp[5] = val.toString() 
-                                            setEnteredOTP(otp.join("")) 
-                                            console.log(enteredOTP)
-                                            setSixthBox(val) 
-                                        } else {
-                                            setSixthBox("")
-                                        }
-                                    }}
-                                    
-                                    sx = {{
-                                        input : {
-                                            textAlign : 'center'
-                                        }
-                                    }}/>
-                                </Box>
-
-                                <Link sx = {{
-                                    mt : 2
-                                }}>
-                                Did not get OTP? Click here to resend
-                                </Link>
-
-                                <Button variant = "outlined" color = "info" fullWidth
-                                sx = {{
-                                    mt : 1
-                                }}
-                                onClick={verifyOTP}>
-                                    Verify OTP
-                                </Button>
-                            </Box> 
+                            <StepII 
+                            email = {email}
+                            enteredOTP = {enteredOTP}
+                            setEnteredOTP = {setEnteredOTP}
+                            verifyOTP = {verifyOTP}/>
                             :
-                            activeStep == 2 ?
+                            activeStep == 2 
+                            ?
                             <Box>
                                 <Typography variant="h6" gutterBottom align = "left">
                                     Set up a Password To Protect Your Account
@@ -667,6 +502,188 @@ const StepI = (props) => {
                 Verify My Email
             </Button>
         </Box>
+    )
+}
+
+const StepII = (props) => {
+
+    const enteredOTP = props.enteredOTP
+    const setEnteredOTP = props.setEnteredOTP
+
+    const email = props.email 
+    const verifyOTP = props.verifyOTP
+    
+    const [firstBox, setFirstBox] = useState("")
+    const [secondBox, setSecondBox] = useState("")
+    const [thirdBox, setThirdBox] = useState("")
+    const [fourthBox, setFourthBox] = useState("")
+    const [fifthBox, setFifthBox] = useState("")
+    const [sixthBox, setSixthBox] = useState("")
+
+
+    return(
+        <Box>
+                                <Typography variant="h6" gutterBottom align = "left">
+                                    Verify your Email!
+                                </Typography>
+                                
+                                <Typography variant = "subtitle2" gutterBottom>
+                                    A 6-digit OTP has been sent to {email}. Please check
+                                    your inbox & enter the OTP below.
+                                </Typography>
+
+                                <Box sx = {{
+                                    display : 'flex',
+                                    gap : 2
+                                }}>
+                                    <TextField variant = "standard" type = "text" value = {firstBox} inputMode = "numeric"
+                                    onChange={(e) => {
+                                        let val = e.target.value
+                                        val = parseInt(val)
+                                        console.log(val)
+                                        if(val >= 0 && val < 10) { 
+                                            let otp = enteredOTP.split("")
+                                            otp[0] = val.toString() 
+                                            console.log(otp) 
+                                            setEnteredOTP(otp.join("")) 
+                                         
+                                            setFirstBox(val) 
+                                        } else {
+                                            setFirstBox("")
+                                        }
+                                    }}
+                                    
+                                    sx = {{
+                                        input : {
+                                            textAlign : 'center'
+                                        }
+                                    }}/>
+
+                                    <TextField variant = "standard" type = "text" value = {secondBox} inputMode = "numeric"
+                                    onChange={(e) => {
+                                        let val = e.target.value
+                                        val = parseInt(val)
+                                        console.log(val)
+                                        if(val >= 0 && val < 10) {
+                                            console.log(val) 
+                                            let otp = enteredOTP.split("")
+                                            otp[1] = val.toString() 
+                                            setEnteredOTP(otp.join("")) 
+    
+                                            setSecondBox(val) 
+                                        } else {
+                                            setSecondBox("")
+                                        }
+                                    }}
+                                    
+                                    sx = {{
+                                        input : {
+                                            textAlign : 'center'
+                                        }
+                                    }}/>
+                                    
+                                    <TextField variant = "standard" type = "text" value = {thirdBox} inputMode = "numeric"
+                                    onChange={(e) => {
+                                        let val = e.target.value
+                                        val = parseInt(val)
+                                        console.log(val)
+                                        if(val >= 0 && val < 10) {
+                                            let otp = enteredOTP.split("")
+                                            otp[2] = val.toString() 
+                                            setEnteredOTP(otp.join(""))  
+
+                                            setThirdBox(val) 
+                                        } else {
+                                            setThirdBox("")
+                                        }
+                                    }}
+                                    
+                                    sx = {{
+                                        input : {
+                                            textAlign : 'center'
+                                        }
+                                    }}/>
+
+                                    <TextField variant = "standard" type = "text" value = {fourthBox} inputMode = "numeric"
+                                    onChange={(e) => {
+                                        let val = e.target.value
+                                        val = parseInt(val)
+                                        console.log(val)
+                                        if(val >= 0 && val < 10) {
+                                            let otp = enteredOTP.split("")
+                                            otp[3] = val.toString() 
+                                            setEnteredOTP(otp.join("")) 
+                                            setFourthBox(val) 
+                                        } else {
+                                            setFourthBox("")
+                                        }
+                                    }}
+                                    
+                                    sx = {{
+                                        input : {
+                                            textAlign : 'center'
+                                        }
+                                    }}/>
+
+                                    <TextField variant = "standard" type = "text" value = {fifthBox} inputMode = "numeric"
+                                    onChange={(e) => {
+                                        let val = e.target.value
+                                        val = parseInt(val)
+                                        console.log(val)
+                                        if(val >= 0 && val < 10) {
+                                            let otp = enteredOTP.split("")
+                                            otp[4] = val.toString() 
+                                            setEnteredOTP(otp.join("")) 
+                                            
+                                            setFifthBox(val) 
+                                        } else {
+                                            setFifthBox("")
+                                        }
+                                    }}
+                                    
+                                    sx = {{
+                                        input : {
+                                            textAlign : 'center'
+                                        }
+                                    }}/>
+
+                                    <TextField variant = "standard" type = "text" value = {sixthBox} inputMode = "numeric"
+                                    onChange={(e) => {
+                                        let val = e.target.value
+                                        val = parseInt(val)
+                                        console.log(val)
+                                        if(val >= 0 && val < 10) {
+                                            let otp = enteredOTP.split("")
+                                            otp[5] = val.toString() 
+                                            setEnteredOTP(otp.join("")) 
+                                            
+                                            setSixthBox(val) 
+                                        } else {
+                                            setSixthBox("")
+                                        }
+                                    }}
+                                    
+                                    sx = {{
+                                        input : {
+                                            textAlign : 'center'
+                                        }
+                                    }}/>
+                                </Box>
+
+                                <Link sx = {{
+                                    mt : 2
+                                }}>
+                                Did not get OTP? Click here to resend
+                                </Link>
+
+                                <Button variant = "outlined" color = "info" fullWidth
+                                sx = {{
+                                    mt : 1
+                                }}
+                                onClick={verifyOTP}>
+                                    Verify OTP
+                                </Button>
+                            </Box> 
     )
 }
 

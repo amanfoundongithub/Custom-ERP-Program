@@ -18,9 +18,18 @@ router = APIRouter(
 
 
 @router.post("/create") 
-async def create_user_route(details : UserCreationRequest):
+async def create_user_route(details : UserCreationRequest, token_data = Depends(verify_auth_token)):
     
     try: 
+        # If token is not valid, tell the provider to re-generate your token
+        if token_data.get("valid") == False:
+            return JSONResponse(
+                status_code = 403,
+                content = {
+                    "message" : token_data.get("error", "")
+                }
+            )
+            
         user_dict = details.model_dump(by_alias = True)
         
         # Verify if user exists
@@ -60,7 +69,7 @@ async def create_user_route(details : UserCreationRequest):
         
         # Additional cookie to set user, should be permanent of the website 
         response.set_cookie(
-            key = COOKIE_NAME, 
+            key = COOKIE_USER_ID, 
             value = user_login_token, 
             httponly = True, 
             samesite = "lax",
@@ -83,3 +92,30 @@ async def create_user_route(details : UserCreationRequest):
             }
         )
 
+@router.get("/token/verify")
+async def verify_user_token_route(token_data = Depends(verify_auth_token), 
+                                  user_token_data = Depends(verify_user_token)):
+     
+    # If token is not valid, tell the provider to re-generate your token
+    if token_data.get("valid") == False:
+        return JSONResponse(
+                status_code = 403,
+                content = {
+                    "message" : token_data.get("error", "")
+                }
+            )
+        
+    if user_token_data.get("valid") == False:
+        return JSONResponse(
+                status_code = 400,
+                content = {
+                    "message" : user_token_data.get("error", "")
+                }
+            )
+        
+    return JSONResponse(
+        status_code = 200,
+        content = {
+            "message" : jsonable_encoder(user_token_data)
+        }
+    )    

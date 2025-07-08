@@ -14,25 +14,22 @@ const WelcomeBox = () => {
     // Navigator hook
     const navigateTo = useNavigate()
 
+    // Controller for the connection to the server & loading of page 
+    const [connectToServer, setConnection] = useState(null) 
+
     // Function to connect to server, takes the access token
     const attemptConnection = () => {
         fetch("http://localhost:8000/session/start", {
-            method : "POST",
+            method : "GET",
             credentials : "include",
-            headers : {
-                "Content-Type" : "application/json"
-            },
-            body : JSON.stringify({
-                "org" : "Wells" 
-            }),
         })
-        .then((response) => {
-            if(response.status == 201) {
-                setTimeout(() => {
-                    setConnection(true)
-                }, 2000)
+        .then((res) => {
+            if(res.status == 201) {
+                // If my connection is deemed successful, I want to ensure that the token works
+                verifyUserToken() 
             } else {
-                alert("Error in connecting to server")
+                setConnection(false) 
+                alert("ERROR : Connection to Server failed")
             }
         })
         .catch((err)=> {
@@ -40,14 +37,28 @@ const WelcomeBox = () => {
         })
     }
 
+    const verifyUserToken = () => {
+        fetch("http://localhost:8000/user/token/verify", {
+            method : "GET",
+            credentials : "include"
+        }) 
+        .then((res) => {
+            if(res.status == 200) {
+                setTimeout(() => {
+                    setConnection(true)
+                }, 3000) 
+            } else {
+                alert("ERROR : You are either not logged in or your session has expired!")
+            }
+        })
+    }
+
     useEffect(() => {
         attemptConnection() 
     }, [])
 
-    const [connectToServer, setConnection] = useState(false) 
-
     return (
-        connectToServer == false ? 
+        connectToServer == null ? 
         <Box sx = {{
             display : 'flex',
             alignContent : 'center',
@@ -58,6 +69,20 @@ const WelcomeBox = () => {
             <CircularProgress />
             <Typography variant = "h5" mt = {1}>
                 Please wait while we connect to the server...
+            </Typography>
+        </Box>
+        :
+        connectToServer == false ?
+        <Box sx = {{
+            display : 'flex',
+            alignContent : 'center',
+            justifyContent : 'center',
+            gap : 1,
+            mt : 4
+        }}> 
+            <CircularProgress />
+            <Typography variant = "h5" mt = {1}>
+                It seems that there is some problem connecting to server. Please try again.
             </Typography>
         </Box>
         :

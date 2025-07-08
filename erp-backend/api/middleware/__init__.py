@@ -1,2 +1,2 @@
 
-from api.middleware.authVerifier import verify_auth_token
+from api.middleware.authVerifier import *

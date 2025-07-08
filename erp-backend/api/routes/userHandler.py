@@ -52,7 +52,8 @@ async def create_user_route(details : UserCreationRequest, token_data = Depends(
         # Generate a token to ensure that the user is login
         user_login_token = {
             "iat" : datetime.now().timestamp(),
-            "user" : True 
+            "user" : True,
+            "id" : user_dict.get("_id") 
         }
         
         user_login_token = generate_jwt_token(user_login_token, 
@@ -105,6 +106,7 @@ async def verify_user_token_route(token_data = Depends(verify_auth_token),
                 }
             )
         
+    # Session Expired/ Log In has failed 
     if user_token_data.get("valid") == False:
         return JSONResponse(
                 status_code = 400,

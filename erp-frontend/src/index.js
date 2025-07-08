@@ -13,6 +13,7 @@ import JournalPage from './journal/JournalPage';
 import SignUpPage from './signup/SignUpPage';
 
 import { useLocation } from 'react-router-dom';
+import ProfilePage from './profile/ProfilePage';
 
 
 const Root = () => {
@@ -24,7 +25,9 @@ const Root = () => {
     <>
     {!hideBar && <TopBar />}
       <Routes>
+        {/** The login part, here only signup is implemented */}
         <Route path='/auth/signup' element = {<SignUpPage />}/>
+        <Route path = '/profile' element = {<ProfilePage />} />
 
         <Route path='/home' element={<MainHomePage />} />
         <Route path='/journal' element = {<JournalPage />}/>

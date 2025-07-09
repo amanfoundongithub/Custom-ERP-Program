@@ -24,6 +24,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMoreOutlined"
 import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import Button from "@mui/material/Button"
+import Paper from "@mui/material/Paper"
 
 
 
@@ -395,14 +396,28 @@ const ProfilePage = () => {
                                         }
 
                                     </Box>
-                                    <Box>
+                                    <Box sx = {{
+                                        display : 'flex',
+                                        flexDirection : 'column',
+                                        gap : 2
+                                    }}>
 
                                         {
                                             companies.map((e, i) => {
+                                                console.log(e) 
                                                 return(
-                                                    <Box>
-                                                        {e.name} 
-                                                    </Box>
+                                                    
+                                                        <Paper elevation = {2}>
+                                                            <Box sx = {{
+                                                                display : 'flex'
+                                                            }}>
+                                                                <Typography variant = "h6">
+                                                                    {e.role} of {e.name}
+                                                                </Typography>
+
+                                                            </Box>
+                                                        </Paper>
+                                                    
                                                 )
                                             })
                                         }

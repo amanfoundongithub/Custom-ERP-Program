@@ -115,10 +115,23 @@ async def get_all_companies(email : str,
         
         company_details = []
         for i in companies_id:
+            # ID details fetch
             details_of_co_id = await company_collection.find_one({
                 "_id" : ObjectId(i)
             })
-            details_of_co_id["_id"] = str(details_of_co_id["_id"])    
+            # String conversion
+            details_of_co_id["_id"] = str(details_of_co_id["_id"])   
+            
+            # Find the role 
+            role = "Member"
+            if email == details_of_co_id["CEO"]:
+                role = "CEO"
+            elif email == details_of_co_id["CFO"]:
+                role = "CFO"
+                
+            details_of_co_id.update({
+                "role" : role 
+            })
             company_details.append(details_of_co_id)
                
         

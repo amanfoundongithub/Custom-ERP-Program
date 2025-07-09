@@ -92,6 +92,77 @@ async def create_user_route(details : UserCreationRequest, token_data = Depends(
                 "message" : str(e)
             }
         )
+        
+@router.get("/verify")
+async def verify_user_email_password(email : str, password : str, token_data = Depends(verify_auth_token)):
+    
+    try: 
+        # If token is not valid, tell the provider to re-generate your token
+        if token_data.get("valid") == False:
+            return JSONResponse(
+                status_code = 403,
+                content = {
+                    "message" : token_data.get("error", "")
+                }
+            )
+    
+        # Now we will check the email & password
+        user_details = await user_collection.find_one({
+            "email" : email
+        })
+        
+        if user_details is None: 
+            return JSONResponse(
+                status_code = 404,
+                content = {
+                    "message" : "NO_USER_WITH_THIS_EMAIL"
+                }
+            )
+        
+        # Confirm password
+        if compare_password(password, user_details.get("password")) == False:
+            return JSONResponse(
+                status_code = 403,
+                content = {
+                    "message" : "INVALID_PASSWORD"
+                }
+            )
+        
+        # Generate a token to ensure that the user is login
+        user_login_token = {
+            "iat" : datetime.now().timestamp(),
+            "user" : True,
+            "id" : str(user_details.get("_id"))
+        }
+        
+        user_login_token = generate_jwt_token(user_login_token, 
+                                              minutes_to_expire = USER_TOKEN_EXPIRE_MINUTES)
+        
+        # Now set cookies
+        response = JSONResponse(
+            status_code = 201,
+            content = {
+                "message" : jsonable_encoder(user_details)
+            }
+        )
+        
+        # Additional cookie to set user, should be permanent of the website 
+        response.set_cookie(
+            key = COOKIE_USER_ID, 
+            value = user_login_token, 
+            httponly = True, 
+            samesite = "lax",
+            max_age = 60 * ACCESS_TOKEN_EXPIRE_MINUTES)
+        
+        return response
+    
+    except Exception as e:
+        return JSONResponse(
+            status_code = 500,
+            content = {
+                "message" : str(e)
+            }
+        )
 
 @router.get("/token/verify")
 async def verify_user_token_route(token_data = Depends(verify_auth_token), 

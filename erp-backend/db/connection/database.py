@@ -13,3 +13,7 @@ db : Database = client[DATABASE_NAME]
 # USER'S COLLECTIONS
 user_collection = db["user"]
 
+# COMPANY'S COLLECTIONS
+company_collection = db["company"] 
+
+

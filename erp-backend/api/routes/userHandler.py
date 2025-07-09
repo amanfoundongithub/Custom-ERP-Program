@@ -124,9 +124,14 @@ async def verify_user_token_route(token_data = Depends(verify_auth_token),
     
 
 @router.get("/details") 
-async def get_details_from_email(email : str, token_data = Depends(verify_auth_token)):
+async def get_details_from_email(email : str, 
+                                 token_data = Depends(verify_auth_token),
+                                 user_token_data = Depends(verify_user_token)):
     
     try: 
+        # Is logged in?
+        isLoggedIn = True 
+        
         # If token is not valid, tell the provider to re-generate your token
         if token_data.get("valid") == False:
             return JSONResponse(
@@ -135,6 +140,9 @@ async def get_details_from_email(email : str, token_data = Depends(verify_auth_t
                     "message" : token_data.get("error", "")
                 }
             )
+        
+        if user_token_data.get("valid") == False: 
+            isLoggedIn = False 
         
         # Now get details from backend 
         user_details_if_found = await user_collection.find_one({
@@ -145,6 +153,14 @@ async def get_details_from_email(email : str, token_data = Depends(verify_auth_t
             raise FileNotFoundError("ERROR : No such user exists") 
         
         user_details_if_found["_id"] = str(user_details_if_found["_id"])
+        
+        if user_details_if_found["_id"] != user_token_data.get("id"):
+            isLoggedIn = False 
+        
+        user_details_if_found.update({
+            "isLoggedIn" : isLoggedIn
+        })
+        
         return JSONResponse(
             status_code = 200,
             content = jsonable_encoder(user_details_if_found)

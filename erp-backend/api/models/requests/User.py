@@ -12,3 +12,4 @@ class UserCreationRequest(BaseModel):
     gender: str
     nationality: str
     
+    companies : list = [] 

@@ -171,29 +171,30 @@ const SignUpPage = () => {
     const [dateOfBirth, setDOB] = useState("2021-07-06")
     const [gender, setGender] = useState("Male")
 
-    const [nationality, setNationality] = useState("India") 
+    const [nationality, setNationality] = useState("Indian") 
 
     const nationality_options = [
         {
-            label : "India",
-            id : 0
+            label : "Indian",
+            id : "Indian"
         },
         {
-            label : "Pakistan",
-            id : 1
-        },
-        {
-            label : "USA",
-            id : 2
-        },
-        {
-            label : "England",
-            id : 3
-        },
+            label : "Australian",
+            id : "Australian"
+        }
     ]
 
     const submitDetails = () => {
         // Send post request
+        console.log({
+                email: email,
+                phone: String(9013233244),
+                password: password,
+                legal_name: name,
+                dob: new Date(dateOfBirth).toISOString(),
+                gender: gender,
+                nationality: nationality
+            })
         fetch("http://localhost:8000/user/create", {
             method : "POST",
             credentials : "include",
@@ -207,7 +208,7 @@ const SignUpPage = () => {
                 legal_name: name,
                 dob: new Date(dateOfBirth).toISOString(),
                 gender: gender,
-                nationality: "India"
+                nationality: nationality
             })
         })
         .then((res) => {
@@ -418,7 +419,10 @@ const SignUpPage = () => {
                                     disablePortal
                                     options = {nationality_options}
                                     value = {nationality}
-                                    onChange={(e) => setNationality(e.target.value) }
+                                    onChange={(e, newVal) => 
+                                        {
+                                            setNationality(newVal.label)
+                                         }}
                                     getOptionLabel={(option) => option.label || ""}
                                     sx = {{mb : 2}}
                                     renderInput = {(params) => <TextField {...params} label = "Nationality" />}

@@ -28,7 +28,7 @@ def verify_auth_token(request : Request):
         }
     else: 
         data.update({
-            "valid" : True 
+            "valid" : True,
         })
         return data 
 

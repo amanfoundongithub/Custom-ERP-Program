@@ -150,3 +150,40 @@ async def get_all_companies(email : str,
                 "message" : str(e)
             }
         )
+        
+@router.get("/confirm")
+async def confirm_user(company : str, password : str, token_data = Depends(verify_auth_token), user_token_data = Depends(verify_user_token)):
+    
+    try: 
+        # If token is not valid, tell the provider to re-generate your token
+        if token_data.get("valid") == False:
+            return JSONResponse(
+                status_code = 403,
+                content = {
+                    "message" : token_data.get("error", "")
+                }
+            )
+            
+        # Session Expired/ Log In has failed 
+        if user_token_data.get("valid") == False:
+            return JSONResponse(
+                status_code = 400,
+                content = {
+                    "message" : user_token_data.get("error", "")
+                }
+            )
+        
+        # Now confirm the company first
+        company_details = await company_collection.find_one(
+            {
+                "name" : company,
+            }
+        )
+    
+    except Exception as e:
+        return JSONResponse(
+            status_code = 500,
+            content = {
+                "message" : str(e)
+            }
+        )

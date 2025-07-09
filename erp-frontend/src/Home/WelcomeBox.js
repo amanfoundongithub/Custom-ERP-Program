@@ -50,6 +50,12 @@ const WelcomeBox = () => {
     }
 
     const verifyUserToken = () => {
+        const password = prompt("Server is live now, you need to enter passcode for the company:")
+        if(password === null) {
+            alert("ERROR: Unauthorized access without passcode not allowed")
+            navigateTo("/auth/signin")
+        }
+
         fetch("http://localhost:8000/user/token/verify", {
             method : "GET",
             credentials : "include"

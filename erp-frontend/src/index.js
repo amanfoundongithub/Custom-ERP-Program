@@ -14,6 +14,7 @@ import SignUpPage from './signup/SignUpPage';
 
 import { useLocation } from 'react-router-dom';
 import ProfilePage from './profile/ProfilePage';
+import SignInPage from './login/SignInPage';
 
 
 const Root = () => {
@@ -27,6 +28,8 @@ const Root = () => {
       <Routes>
         {/** The login part, here only signup is implemented */}
         <Route path='/auth/signup' element = {<SignUpPage />}/>
+        <Route path='/auth/signin' element = {<SignInPage />}/>
+        
         <Route path = '/profile' element = {<ProfilePage />} />
 
         <Route path='/home' element={<MainHomePage />} />

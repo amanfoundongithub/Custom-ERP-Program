@@ -135,12 +135,14 @@ async def verify_user_email_password(email : str, password : str, token_data = D
             "id" : str(user_details.get("_id"))
         }
         
+        
         user_login_token = generate_jwt_token(user_login_token, 
                                               minutes_to_expire = USER_TOKEN_EXPIRE_MINUTES)
         
         # Now set cookies
+        user_details["_id"] = str(user_details["_id"])
         response = JSONResponse(
-            status_code = 201,
+            status_code = 200,
             content = {
                 "message" : jsonable_encoder(user_details)
             }

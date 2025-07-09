@@ -73,8 +73,29 @@ const ProfilePage = () => {
                 if (res.status == 200) {
                     res.json()
                         .then((val) => {
-                            console.log(val)
                             setDetails(val)
+                            getAllCompanies(email) 
+                        })
+                        .catch((err) => {
+                            console.log(err)
+                        })
+
+                } else {
+                    alert("ERROR : Could not fetch details of the person")
+                }
+            })
+    }
+
+    const getAllCompanies = (email) => {
+        fetch("http://localhost:8000/company/all?email=" + email, {
+            method: "GET",
+            credentials: "include"
+        })
+            .then((res) => {
+                if (res.status == 200) {
+                    res.json()
+                        .then((val) => {
+                            setCompanies(val.message)
                             setPageLoad(true)
                         })
                         .catch((err) => {
@@ -86,6 +107,7 @@ const ProfilePage = () => {
                 }
             })
     }
+
 
     // Method to get age from DOB
     const getAgeFromDOB = (dob) => {
@@ -104,43 +126,45 @@ const ProfilePage = () => {
 
     // Method to handle company creation by user 
     const handleCompanyCreation = () => {
-    const payload = {
-        name: companyForm.name,
-        typeofCompany: companyForm.typeofCompany,
-        members: [],
-        CEO: companyForm.ceoOrCfo === "CEO" ? details.email : "",
-        CFO: companyForm.ceoOrCfo === "CFO" ? details.email : "",
-        dateofFounding: companyForm.dateofFounding,
-        passcode: companyForm.passcode
-    }
-    console.log(payload) 
-
-    fetch("http://localhost:8000/company/create", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify(payload)
-    })
-    .then((res) => {
-        if(res.status === 200 || res.status === 201) {
-            alert("Company created successfully!")
-            setModalOpen(false)
-        } else {
-            alert("Error creating company.")
+        const payload = {
+            name: companyForm.name,
+            typeofCompany: companyForm.typeofCompany,
+            members: [],
+            CEO: companyForm.ceoOrCfo === "CEO" ? details.email : "",
+            CFO: companyForm.ceoOrCfo === "CFO" ? details.email : "",
+            dateofFounding: companyForm.dateofFounding,
+            passcode: companyForm.passcode
         }
-    })
-    .catch((err) => {
-        console.error(err)
-    })
-}
+
+        fetch("http://localhost:8000/company/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify(payload)
+        })
+            .then((res) => {
+                if (res.status === 201) {
+                    alert("Company created successfully!")
+                    setModalOpen(false)
+                } else {
+                    alert("Error creating company.")
+                }
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+    }
+
+
 
 
     /**
      * State variables 
      */
     const [details, setDetails] = useState({})
+    const [companies, setCompanies] = useState([]) 
 
 
     // Should the page be loaded?
@@ -176,6 +200,7 @@ const ProfilePage = () => {
                 </Typography>
             </Box>
             :
+            
             <Box>
                 <Modal
                     open={modalOpen}
@@ -372,9 +397,15 @@ const ProfilePage = () => {
                                     </Box>
                                     <Box>
 
-                                        <Typography variant="h5">
-                                            List of Companies
-                                        </Typography>
+                                        {
+                                            companies.map((e, i) => {
+                                                return(
+                                                    <Box>
+                                                        {e.name} 
+                                                    </Box>
+                                                )
+                                            })
+                                        }
 
                                     </Box>
 

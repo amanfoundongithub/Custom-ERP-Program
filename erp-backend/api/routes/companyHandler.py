@@ -82,3 +82,58 @@ async def create_company_route(details : CompanyCreationRequest,
                 "message" : str(e)
             }
         )
+
+@router.get("/all")
+async def get_all_companies(email : str, 
+                            token_data = Depends(verify_auth_token)):
+    
+    try:
+        # If token is not valid, tell the provider to re-generate your token
+        if token_data.get("valid") == False:
+            return JSONResponse(
+                status_code = 403,
+                content = {
+                    "message" : token_data.get("error", "")
+                }
+            )
+            
+        # Get the user's data
+        user_data = await user_collection.find_one({
+            "email" : email 
+        })
+        
+        if user_data is None:
+            return JSONResponse(
+                status_code = 404,
+                content = {
+                    "message" : "USER_NOT_FOUND"
+                }
+            )
+        
+        # Companies
+        companies_id = user_data.get("companies", [])
+        
+        company_details = []
+        for i in companies_id:
+            details_of_co_id = await company_collection.find_one({
+                "_id" : ObjectId(i)
+            })
+            details_of_co_id["_id"] = str(details_of_co_id["_id"])    
+            company_details.append(details_of_co_id)
+            
+        
+        
+        return JSONResponse(
+            status_code = 200,
+            content={
+                "message": jsonable_encoder(company_details) 
+            }
+        )
+        
+    except Exception as e: 
+        return JSONResponse(
+            status_code = 500,
+            content = {
+                "message" : str(e)
+            }
+        )

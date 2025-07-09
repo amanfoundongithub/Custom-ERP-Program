@@ -22,7 +22,7 @@ import Select from "@mui/material/Select"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMoreOutlined"
 
 import { useEffect, useState } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import Button from "@mui/material/Button"
 import Paper from "@mui/material/Paper"
 
@@ -32,6 +32,8 @@ const ProfilePage = () => {
 
     // URL params 
     const [params] = useSearchParams()
+
+    const navigator = useNavigate() 
 
     // Method to get email from the params
     const getEmailFromParams = () => {
@@ -412,7 +414,10 @@ const ProfilePage = () => {
                                                                 display : 'flex'
                                                             }}>
                                                                 <Typography variant = "h6">
-                                                                    {e.role} of {e.name}
+                                                                    {e.role} of 
+                                                                </Typography>
+                                                                <Typography variant = "h6" onClick = {() => navigator("/home?company=" + e.name)}>
+                                                                    {e.name}
                                                                 </Typography>
 
                                                             </Box>

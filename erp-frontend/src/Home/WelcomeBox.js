@@ -5,17 +5,29 @@ import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import { useEffect, useState } from "react";
 
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useSearchParams} from 'react-router-dom';
 
 
 
 const WelcomeBox = () => {
+
+    // URL params
+    const [params] = useSearchParams() 
 
     // Navigator hook
     const navigateTo = useNavigate()
 
     // Controller for the connection to the server & loading of page 
     const [connectToServer, setConnection] = useState(null) 
+
+    // Check if company name is there or not
+    const startConnection = () => {
+        if(params.get("company") === null) {
+            alert("ERROR: Company name not provided in URL")
+        } else {
+            attemptConnection() 
+        }
+    }
 
     // Function to connect to server, takes the access token
     const attemptConnection = () => {
@@ -55,7 +67,7 @@ const WelcomeBox = () => {
     }
 
     useEffect(() => {
-        attemptConnection() 
+        startConnection() 
     }, [])
 
     return (

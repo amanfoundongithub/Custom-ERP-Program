@@ -212,8 +212,15 @@ const SignUpPage = () => {
         })
         .then((res) => {
             if(res.status == 201) {
-                alert("Account created!")
-                navigator("/home")
+                
+                res.json().then((val)=> {
+                    const message = val.message
+                    navigator("/profile?email=" + message.email)
+                })
+                .catch((err) => {
+                    console.log(err) 
+                })
+
             } else if(res.status == 450) {
                 alert("Account failed to create; Already exists one")
             }

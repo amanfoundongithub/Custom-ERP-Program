@@ -121,3 +121,41 @@ async def verify_user_token_route(token_data = Depends(verify_auth_token),
             "message" : jsonable_encoder(user_token_data)
         }
     )    
+    
+
+@router.get("/details") 
+async def get_details_from_email(email : str, token_data = Depends(verify_auth_token)):
+    
+    try: 
+        # If token is not valid, tell the provider to re-generate your token
+        if token_data.get("valid") == False:
+            return JSONResponse(
+                status_code = 403,
+                content = {
+                    "message" : token_data.get("error", "")
+                }
+            )
+        
+        # Now get details from backend 
+        user_details_if_found = await user_collection.find_one({
+            "email" : email 
+        })
+        
+        if user_details_if_found is None: 
+            raise FileNotFoundError("ERROR : No such user exists") 
+        
+        user_details_if_found["_id"] = str(user_details_if_found["_id"])
+        return JSONResponse(
+            status_code = 200,
+            content = jsonable_encoder(user_details_if_found)
+        ) 
+        
+    
+    except Exception as e:
+        print(e) 
+        return JSONResponse(
+            status_code = 500,
+            content = {
+                "message" : str(e)
+            }
+        )

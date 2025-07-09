@@ -120,7 +120,7 @@ async def get_all_companies(email : str,
             })
             details_of_co_id["_id"] = str(details_of_co_id["_id"])    
             company_details.append(details_of_co_id)
-            
+               
         
         
         return JSONResponse(

@@ -49,6 +49,7 @@ const WelcomeBox = () => {
                 }, 3000) 
             } else {
                 alert("ERROR : You are either not logged in or your session has expired!")
+                navigateTo("/auth/signup")
             }
         })
     }

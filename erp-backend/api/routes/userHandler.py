@@ -53,7 +53,8 @@ async def create_user_route(details : UserCreationRequest, token_data = Depends(
         user_login_token = {
             "iat" : datetime.now().timestamp(),
             "user" : True,
-            "id" : user_dict.get("_id") 
+            "id" : user_dict.get("_id"),
+            "email"  : user_dict.get("email") 
         }
         
         user_login_token = generate_jwt_token(user_login_token, 
@@ -132,7 +133,8 @@ async def verify_user_email_password(email : str, password : str, token_data = D
         user_login_token = {
             "iat" : datetime.now().timestamp(),
             "user" : True,
-            "id" : str(user_details.get("_id"))
+            "id" : str(user_details.get("_id")),
+            "email"  : user_details.get("email") 
         }
         
         

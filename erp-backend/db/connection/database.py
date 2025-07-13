@@ -17,3 +17,16 @@ user_collection = db["user"]
 company_collection = db["company"] 
 
 
+# Utility to create DB of the company 
+def create_company_db(company_id : str):
+    
+    # Company DB 
+    db_company = client[company_id]
+    # Ledger and Journals
+    journal = db_company["journal"]
+    
+    ledger = db_company["ledger"]
+    
+    # Return these
+    return db_company, journal, ledger
+

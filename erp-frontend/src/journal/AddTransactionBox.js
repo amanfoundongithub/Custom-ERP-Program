@@ -174,7 +174,6 @@ const AddTransactionButton = (props) => {
         modifyList(list => {
             let updated = [...list]
             updated[idx] = edit_list[idx]
-            console.log(updated)
             return updated
         })
         disableEditAccess(idx)
@@ -215,12 +214,7 @@ const AddTransactionButton = (props) => {
 
         const debits = list_of_accounts.filter(a => a.typeofAcc === "Debit")
         const credits = list_of_accounts.filter(a => a.typeofAcc === "Credit")
-        console.log({
-                    dateOfEntry : new Date(transactionDate).toISOString(),
-                    description : description,
-                    debit : debits,
-                    credit : credits 
-                })
+
         // Request writer
         fetch("http://localhost:8000/journal/add?company=" + params.get("company"), {
             "method" : "POST",

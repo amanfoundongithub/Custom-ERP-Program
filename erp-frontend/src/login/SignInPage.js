@@ -7,75 +7,114 @@ import Typography from "@mui/material/Typography"
 
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { getLoginURLandBody, getSessionTokenURLandBody } from "../utils/requestHelper"
 
 
 
+
+const isEmailValid = (email) => {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(email);
+} 
+
+/**
+ * The default Login Page for the application
+ * 
+ * @author amanfoundongithub
+ * 
+ */
 const SignInPage = () => {
 
-    // Navigator
+    // Navigator Hook for navigation 
     const navigator = useNavigate()
 
+    /**
+     * Control parameters : 
+     * 
+     * email : Email of the person
+     * 
+     * password : Password of the person's account 
+     * 
+     */
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
-    const handleEmailValidity = () => {
-        return email.includes("@")
-    }
-
     /**
-         * Config: Get session token
-         */
+     * Control parameters for other utility page controls 
+     * 
+     * loadScreen : Loads the screen based on its boolean value/null value
+     */
     const [loadScreen, setLoadScreen] = useState(false)
 
+
+    // Handler for handling email ID verification 
+    const handleEmailValidity = () => isEmailValid(email) 
+
+    // useEffect called for getting session token 
+    useEffect(() => getSessionToken(), [])
+
     const getSessionToken = () => {
-        fetch("http://localhost:8000/session/start", {
-            method: "GET",
-            credentials: "include",
-        })
-            .then((res) => {
+
+        // Get the body and url from the token_request_body 
+        const [url, body] = getSessionTokenURLandBody()
+
+        // API call to the backend 
+        fetch(url, body) 
+
+            .then(
+                (res) => {
                 if (res.status == 201) {
-                    setTimeout(() => {
-                        setLoadScreen(true)
-                    }, 4000)
+                    setTimeout(() => setLoadScreen(true), 4000)
                 } else {
                     alert("Error in getting session")
                 }
-            })
+            }
+        )
+
+            .catch(
+                (err) => {
+                    console.log(err) 
+                }
+        )
     }
+
 
     const loginSystem = () => {
-        fetch("http://localhost:8000/user/verify?email=" + email + "&password=" + password, {
-            method : "GET",
-            credentials : "include"
-        })
-        .then((res) => {
-            if(res.status == 200) {
 
-                res.json().then((res) => {
-                    alert("Success! Will redirect to your profile...")
-                    navigator("/profile?email=" + email)
-                })
-                .catch((err) => {
-                    console.log(err) 
-                })
+        // Create a request body & URL from the credentials
+        const [url, body] = getLoginURLandBody(email, password) 
+
+        // API call to the backend 
+        fetch(url, body) 
+
+            .then(
+                (res) => {
+                if(res.status == 200) {
+                    res.json()
+                    .then(
+                        (res) => {
+                            alert("Success! Will redirect to your profile...")
+                            navigator("/profile?email=" + email)
+                    })
+                    .catch(
+                        (err) => {
+                           console.log(err) 
+                    })
                 
-            } else if(res.status == 404) {
-                alert("ERROR: Email does not exist")
-            } else if(res.status == 400) {
-                alert("ERROR : Invalid Password")
-            } else {
-                alert("ERROR: ISE")
-            }
+                } else if(res.status == 404) {
+                    alert("ERROR: Email does not exist")
+                } else if(res.status == 400) {
+                    alert("ERROR : Invalid Password")
+                } else {
+                    alert("ERROR: Internal Server Error during verification")
+                }
 
         })
-        .catch((err) => {
-            console.log(err) 
+            .catch(
+                (err) => {
+                    console.log(err) 
         })
     }
-
-    useEffect(() => {
-        getSessionToken()
-    }, [])
 
     return (
         loadScreen == false ?

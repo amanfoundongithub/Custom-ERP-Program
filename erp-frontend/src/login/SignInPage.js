@@ -127,19 +127,20 @@ const SignInPage = () => {
 
     return (
         loadScreen == false ?
-            <Box sx={{
-                width: '100%',
-                height: '100%'
-            }}>
-                <Box sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: 2,
-                    mt: 4
-                }}>
+            <Box
+                sx={{
+                    width: "100%",
+                    height: "90vh",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    bgcolor: "#fafafa",
+                }}
+            >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <CircularProgress />
-                    <Typography variant="h5">
-                        Please wait while we connect to server...
+                    <Typography variant="h6" color="text.secondary">
+                        Please wait while we are connecting to the server...
                     </Typography>
                 </Box>
             </Box>

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react"
 import WhatIsAJournalBox from "./JournalInfoBox"
 import AddTransactionBox from "./AddTransactionBox"
 import ViewJournalBox from "./ViewJournalBox"
+import { useNavigate } from "react-router-dom"
 
 const JournalPage = () => {
 
@@ -16,13 +17,56 @@ const JournalPage = () => {
         "Cash", "Purchases", "Sales", "Retained Earnings"
     ])
 
+    const navigateTo = useNavigate() 
+
+    // Function to connect to server, takes the access token
+    const attemptConnection = () => {
+        fetch("http://localhost:8000/session/start", {
+            method : "GET",
+            credentials : "include",
+        })
+        .then((res) => {
+            if(res.status == 201) {
+                // If my connection is deemed successful, I want to ensure that the token works
+                verifyUserToken() 
+            } else {
+                setPageLoader(false) 
+                alert("ERROR : Connection to Server failed")
+            }
+        })
+        .catch((err)=> {
+            console.log(err) 
+        })
+    }
+
+    const verifyUserToken = () => {
+        const password = prompt("Server is live now, you need to enter passcode for the company:")
+        if(password === null) {
+            alert("ERROR: Unauthorized access without passcode not allowed")
+            navigateTo("/auth/signin")
+        }
+
+        fetch("http://localhost:8000/user/token/verify", {
+            method : "GET",
+            credentials : "include"
+        }) 
+        .then((res) => {
+            if(res.status == 200) {
+                setTimeout(() => {
+                    setPageLoader(true)
+                }, 3000) 
+            } else {
+                alert("ERROR : You are either not logged in or your session has expired!")
+                navigateTo("/auth/signup")
+            }
+        })
+    }
+
     // Loading the page 
     useEffect(() => {
         // 
-        setTimeout(() => {
-            setPageLoader(true)   
-        }, 3000)
-    })
+        attemptConnection() 
+    }, [])
 
     // List of transactions i want to show? 
     return (

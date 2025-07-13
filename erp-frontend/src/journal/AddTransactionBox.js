@@ -32,7 +32,7 @@ import AddTaskIcon from '@mui/icons-material/AddTask';
 import WarningIcon from '@mui/icons-material/Warning';
 
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import Autocomplete from "@mui/material/Autocomplete";
 
 
@@ -90,6 +90,8 @@ const isValid = (list_of_accounts) => {
 
 
 const AddTransactionButton = (props) => {
+
+    const [params] = useSearchParams() 
 
 
     let setListofAccNames = props.setListofAccNames
@@ -158,7 +160,6 @@ const AddTransactionButton = (props) => {
     }
 
     const editEntry = (idx, field, value) => {
-        console.log(idx, field, value)
         modifyEditList(list => {
             let updated = [...list]
             updated[idx] = {
@@ -212,12 +213,46 @@ const AddTransactionButton = (props) => {
         setConfirmSubmission(false)
         setProcessing(true)
 
+        const debits = list_of_accounts.filter(a => a.typeofAcc === "Debit")
+        const credits = list_of_accounts.filter(a => a.typeofAcc === "Credit")
+        console.log({
+                    dateOfEntry : new Date(transactionDate).toISOString(),
+                    description : description,
+                    debit : debits,
+                    credit : credits 
+                })
         // Request writer
+        fetch("http://localhost:8000/journal/add?company=" + params.get("company"), {
+            "method" : "POST",
+            "credentials" : "include",
+            "headers" : {
+                "Content-Type" : "application/json"
+            },
+            "body" : JSON.stringify(
+                {
+                    dateOfEntry : transactionDate,
+                    description : description,
+                    debit : debits,
+                    credit : credits 
+                }
+            )
+        })
+
+        .then((res) => {
+            if(res.status == 201) {
+                setTimeout(() => {
+                    setProcessing(false)
+                    setSuccess(true)
+                }, 5000)
+            } else {
+                res.json().then((val) => console.log(val))
+            }
+        }) 
+        .catch((err) => {
+            console.log(err) 
+        })
         
-        setTimeout(() => {
-            setProcessing(false)
-            setSuccess(true)
-        }, 5000)
+        
     }
 
     return (

@@ -223,7 +223,12 @@ async def get_details_from_email(email : str,
         })
         
         if user_details_if_found is None: 
-            raise FileNotFoundError("ERROR : No such user exists") 
+            return JSONResponse(
+                status_code = 404,
+                content = {
+                    "message" : "USER_NOT_FOUND"
+                }
+            )
         
         user_details_if_found["_id"] = str(user_details_if_found["_id"])
         
@@ -241,7 +246,6 @@ async def get_details_from_email(email : str,
         
     
     except Exception as e:
-        print(e) 
         return JSONResponse(
             status_code = 500,
             content = {

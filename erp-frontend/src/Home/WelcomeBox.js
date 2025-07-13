@@ -147,7 +147,7 @@ const WelcomeBox = () => {
                             }
                         }} 
                         onClick={() => {
-                            navigateTo('/journal')
+                            navigateTo('/journal?company=' + params.get("company"))
                         }}>
                             ADD A TRANSACTION TO JOURNAL
                         </Button>

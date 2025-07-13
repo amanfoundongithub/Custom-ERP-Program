@@ -212,7 +212,8 @@ const AddTransactionButton = (props) => {
         setConfirmSubmission(false)
         setProcessing(true)
 
-        // Post
+        // Request writer
+        
         setTimeout(() => {
             setProcessing(false)
             setSuccess(true)

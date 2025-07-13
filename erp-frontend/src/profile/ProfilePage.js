@@ -83,9 +83,15 @@ const ProfilePage = () => {
                             console.log(err)
                         })
 
+                } else if(res.status == 404) {
+                    alert("ERROR : User Not Found")
                 } else {
-                    alert("ERROR : Could not fetch details of the person")
+                    throw Error() 
                 }
+            })
+
+            .catch((err) => {
+                setPageLoad(false) 
             })
     }
 
@@ -191,8 +197,8 @@ const ProfilePage = () => {
     }, [])
 
     return (
-        pageLoad == false ?
-            <Box sx={{
+        pageLoad === null ?
+        <Box sx={{
                 display: 'flex',
                 justifyContent: 'center'
             }}>
@@ -200,6 +206,17 @@ const ProfilePage = () => {
                 <CircularProgress />
                 <Typography variant="caption">
                     Please wait while we fetch details...
+                </Typography>
+            </Box>
+        :
+        pageLoad === false ?
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'center'
+            }}>
+
+                <Typography variant="caption">
+                    It seems that there is a problem connecting to the server, please try again
                 </Typography>
             </Box>
             :

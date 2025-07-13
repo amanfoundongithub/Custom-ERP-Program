@@ -4,10 +4,12 @@ import CircularProgress from "@mui/material/CircularProgress"
 import Paper from "@mui/material/Paper"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
+import Link from "@mui/material/Link"
 
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getLoginURLandBody, getSessionTokenURLandBody } from "../utils/requestHelper"
+
 
 
 
@@ -45,6 +47,7 @@ const SignInPage = () => {
      * loadScreen : Loads the screen based on its boolean value/null value
      */
     const [loadScreen, setLoadScreen] = useState(false)
+    const [disableButton, setDisableButton] = useState(false) 
 
 
     // Handler for handling email ID verification 
@@ -81,6 +84,8 @@ const SignInPage = () => {
 
     const loginSystem = () => {
 
+        setDisableButton(true) 
+
         // Create a request body & URL from the credentials
         const [url, body] = getLoginURLandBody(email, password) 
 
@@ -103,16 +108,20 @@ const SignInPage = () => {
                 
                 } else if(res.status == 404) {
                     alert("ERROR: Email does not exist")
+                    setDisableButton(false)
                 } else if(res.status == 400) {
                     alert("ERROR : Invalid Password")
+                    setDisableButton(false)
                 } else {
                     alert("ERROR: Internal Server Error during verification")
+                    setDisableButton(false) 
                 }
 
         })
             .catch(
                 (err) => {
                     console.log(err) 
+                    setDisableButton(false) 
         })
     }
 
@@ -149,11 +158,15 @@ const SignInPage = () => {
                          bgcolor: "#f5f5f5",
                     }}
                 >
-                    <Paper elevation={3} sx={{ p: 4, maxWidth: 500, borderRadius: 2 }}>
+                    <Paper elevation={3} sx={{ p: 4, maxWidth: 750, borderRadius: 2 }}>
 
                         <Typography variant="h5" fontFamily="monospace" textAlign="center"
-                            mb={1}>
-                            Welcome Back, member!
+                            mb={3}>
+                            Welcome Back, Dear!
+                        </Typography>
+
+                        <Typography variant = "h6" fontFamily = "monospace" textAlign = "start">
+                            Enter Your Email & Password Below:
                         </Typography>
 
                         <TextField
@@ -164,10 +177,10 @@ const SignInPage = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             error={
-                                handleEmailValidity() == false
+                                handleEmailValidity() == false 
                             }
                             helperText={
-                                handleEmailValidity() ? "" : "Enter the correct email"
+                                handleEmailValidity() ? "" : "Enter a valid email"
                             }
                             sx={{
                                 mb: 2
@@ -185,8 +198,21 @@ const SignInPage = () => {
                                 mb: 1
                             }}
                         />
+                        
+                        <Box sx = {{
+                            display : 'flex',
+                            flexDirection : "row-reverse",
+                            mb : 2
+                        }}>
+                            
+                            <Link href = "/auth/signup" underline = "hover">
+                                Don't have an account? Click here to create one now!
+                            </Link>
 
-                        <Button variant = "outlined" color = "success" onClick={loginSystem}>
+                        </Box>
+                        
+
+                        <Button variant = "outlined" color = "success" onClick={loginSystem} fullWidth disabled = {disableButton}>
                             Login
                         </Button>
 

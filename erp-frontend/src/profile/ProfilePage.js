@@ -27,6 +27,8 @@ import { useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
 import { getProfileDetailsURLandBody, getSessionTokenURLandBody } from "../utils/requestHelper"
+import ConnectionFailedPage from "../errors/ConnectionFailed"
+import ConnectingPage from "../errors/Connecting"
 
 
 
@@ -40,24 +42,43 @@ import { getProfileDetailsURLandBody, getSessionTokenURLandBody } from "../utils
  */
 const ProfilePage = () => {
 
-    // URL params 
+    /**
+     * Utility for fetching email from URL params 
+     */
     const [params] = useSearchParams()
-
-    const navigator = useNavigate() 
-
-    // Method to get email from the params
-    const getEmailFromParams = () => {
+    const fetchEmailFromURL = () => {
         const email = params.get("email")
 
-        if (email === null || email.trim() === "") {
-            alert("ERROR : Invalid URL, missing `email`")
+        if(email === null || email.trim() === "") {
+            throw Error("INVALID_EMAIL")
+        } else {
+            return email 
+        }
+    }
+
+    /**
+     * Initial function call 1: checks if the email field is there on the URL or not 
+     */
+    const getEmailFromParams = () => {
+
+        const email = params.get("email")
+
+        if(email == null || email.trim() === "") {
+            alert("ERROR : ")
         } else {
             getSessionToken(email)
         }
     }
 
-    // Method to get session token from the server 
+    // Should the page be loaded?
+    const [pageLoad, setPageLoad] = useState(null)
+
+    const navigator = useNavigate() 
+
     const getSessionToken = (email) => {
+
+        // Set the page in loader mode...
+        setPageLoad(null) 
 
         // Get the body and url from the token_request_body 
         const [url, body] = getSessionTokenURLandBody()
@@ -65,16 +86,21 @@ const ProfilePage = () => {
         // API call to the backend 
         fetch(url, body) 
 
-            .then((res) => {
+            .then(
+                (res) => {
                 if (res.status == 201) {
+                    // Callback for getting email details; the callback is deemed successful 
                     getEmailDetails(email)
                 } else {
                     alert("ERROR : Server is unable to issue token at this moment; please try again!")
+                    setPageLoad(false) 
                 }
-            })
-            .catch((err) => {
+        })
+            .catch(
+                (err) => {
                 console.log(err)
-            })
+                setPageLoad(false) 
+        })
     }
 
     // Method to get the details of the email from server
@@ -187,10 +213,6 @@ const ProfilePage = () => {
     const [details, setDetails] = useState({})
     const [companies, setCompanies] = useState([]) 
 
-
-    // Should the page be loaded?
-    const [pageLoad, setPageLoad] = useState(false)
-
     // Get the details of the company:
     const [modalOpen, setModalOpen] = useState(false)
     const [companyForm, setCompanyForm] = useState({
@@ -210,28 +232,11 @@ const ProfilePage = () => {
 
     return (
         pageLoad === null ?
-        <Box sx={{
-                display: 'flex',
-                justifyContent: 'center'
-            }}>
-
-                <CircularProgress />
-                <Typography variant="caption">
-                    Please wait while we fetch details...
-                </Typography>
-            </Box>
+        <ConnectingPage />
         :
         pageLoad === false ?
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'center'
-            }}>
-
-                <Typography variant="caption">
-                    It seems that there is a problem connecting to the server, please try again
-                </Typography>
-            </Box>
-            :
+        <ConnectionFailedPage />
+        :
             
             <Box>
                 <Modal

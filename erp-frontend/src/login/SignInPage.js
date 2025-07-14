@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom"
 
 import { getLoginURLandBody, getSessionTokenURLandBody } from "../utils/requestHelper"
 import ConnectionFailedPage from "../errors/ConnectionFailed"
+import ConnectingPage from "../errors/Connecting"
 
 
 
@@ -135,27 +136,11 @@ const SignInPage = () => {
 
     return (
         loadScreen === null ?
-        <Box
-                sx={{
-                    width: "100%",
-                    height: "90vh",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    bgcolor: "#fafafa",
-                }}
-            >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <CircularProgress />
-                    <Typography variant="h6" color="text.secondary">
-                        Please wait while we are connecting to the server...
-                    </Typography>
-                </Box>
-            </Box>
+        <ConnectingPage />
         :
         loadScreen === false ?
-            <ConnectionFailedPage callback = {getSessionToken} />
-            :
+        <ConnectionFailedPage callback = {getSessionToken} />
+        :
             <Box sx={{
                 width: '100%',
                 height: '100%'

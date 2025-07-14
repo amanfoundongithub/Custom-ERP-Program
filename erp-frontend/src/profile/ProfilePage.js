@@ -139,7 +139,7 @@ const ProfilePage = () => {
                                 }
                             )
                     } else if(res.status === 404) {
-
+                        alert("Message from server: Email Not Found...")
                     } else {
                         throw Error("SERVER_ERROR")  
                     }

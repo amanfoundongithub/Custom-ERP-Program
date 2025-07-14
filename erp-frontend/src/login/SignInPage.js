@@ -46,7 +46,7 @@ const SignInPage = () => {
      * 
      * loadScreen : Loads the screen based on its boolean value/null value
      */
-    const [loadScreen, setLoadScreen] = useState(false)
+    const [loadScreen, setLoadScreen] = useState(null)
     const [disableButton, setDisableButton] = useState(false) 
 
 
@@ -57,6 +57,8 @@ const SignInPage = () => {
     useEffect(() => getSessionToken(), [])
 
     const getSessionToken = () => {
+        // Set screen in rendering mode
+        setLoadScreen(null)
 
         // Get the body and url from the token_request_body 
         const [url, body] = getSessionTokenURLandBody()
@@ -69,13 +71,14 @@ const SignInPage = () => {
                 if (res.status == 201) {
                     setTimeout(() => setLoadScreen(true), 4000)
                 } else {
-                    alert("Error in getting session")
+                    setLoadScreen(false) 
                 }
             }
         )
 
             .catch(
                 (err) => {
+                    setLoadScreen(false) 
                     console.log(err) 
                 }
         )
@@ -126,8 +129,8 @@ const SignInPage = () => {
     }
 
     return (
-        loadScreen == false ?
-            <Box
+        loadScreen === null ?
+        <Box
                 sx={{
                     width: "100%",
                     height: "90vh",
@@ -142,6 +145,38 @@ const SignInPage = () => {
                     <Typography variant="h6" color="text.secondary">
                         Please wait while we are connecting to the server...
                     </Typography>
+                </Box>
+            </Box>
+        :
+        loadScreen === false ?
+            <Box
+                sx={{
+                    width: "100%",
+                    height: "90vh",
+                    display: "flex",
+                    flexDirection : 'column',
+                    justifyContent: "center",
+                    alignItems: "center",
+                    bgcolor: "#fafafa",
+                }}
+            >
+                <Box sx={{ display: "flex", gap: 2, flexDirection: 'column', maxWidth : 650}}>
+                    <Typography variant = "h6" color = "text.error" textAlign = "start">
+                        SERVER CONNECTION ERROR:
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                        We are currently unable to get the token for current session.
+                        Either the server is busy or we are unable to connect to it. 
+                        Please try again after some time. 
+                    </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Button 
+                    variant = "outlined"
+                    color = "warning"
+                    onClick = {getSessionToken}>
+                        Retry Connection
+                    </Button>
                 </Box>
             </Box>
             :

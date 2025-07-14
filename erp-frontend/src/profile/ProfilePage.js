@@ -26,7 +26,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMoreOutlined"
 import { useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
-import { getProfileDetailsURLandBody, getSessionTokenURLandBody } from "../utils/requestHelper"
+import { getAllCompaniesURLandBody, getProfileDetailsURLandBody, getSessionTokenURLandBody } from "../utils/requestHelper"
 import ConnectionFailedPage from "../errors/ConnectionFailed"
 import ConnectingPage from "../errors/Connecting"
 
@@ -43,6 +43,13 @@ import ConnectingPage from "../errors/Connecting"
 const ProfilePage = () => {
 
     /**
+     * Control variable for controlling the page
+     */
+    const [pageLoad, setPageLoad] = useState(null)
+    const navigator = useNavigate() 
+
+
+    /**
      * Utility for fetching email from URL params 
      */
     const [params] = useSearchParams()
@@ -57,103 +64,124 @@ const ProfilePage = () => {
     }
 
     /**
-     * Initial function call 1: checks if the email field is there on the URL or not 
+     * Utility for getting session token (Callback 1)
      */
-    const getEmailFromParams = () => {
+    const getSessionToken = () => {
 
-        const email = params.get("email")
+        try {
+            // Get email from the URL
+            const email = fetchEmailFromURL()
 
-        if(email == null || email.trim() === "") {
-            alert("ERROR : ")
-        } else {
-            getSessionToken(email)
+            // Set page in loader mode
+            setPageLoad(null)
+
+            // Get the body and url from the token_request_body 
+            const [url, body] = getSessionTokenURLandBody()
+
+            // API call to the backend
+            fetch(url, body)
+
+                .then(
+                    (res) => {
+                        if(res.status === 201) {
+                            fetchEmailDetailsFromServer(email) 
+                        } else {
+                            setPageLoad(false) 
+                        }
+                    }
+                )
+
+                .catch(
+                    (err) => {
+                        console.log(err)
+                        setPageLoad(false) 
+                    }
+                )
+
+        } catch(err) {
+            alert("ERROR: Invalid domain; field 'email' does not exist") 
         }
     }
 
-    // Should the page be loaded?
-    const [pageLoad, setPageLoad] = useState(null)
-
-    const navigator = useNavigate() 
-
-    const getSessionToken = (email) => {
-
-        // Set the page in loader mode...
-        setPageLoad(null) 
-
-        // Get the body and url from the token_request_body 
-        const [url, body] = getSessionTokenURLandBody()
-        
-        // API call to the backend 
-        fetch(url, body) 
-
-            .then(
-                (res) => {
-                if (res.status == 201) {
-                    // Callback for getting email details; the callback is deemed successful 
-                    getEmailDetails(email)
-                } else {
-                    alert("ERROR : Server is unable to issue token at this moment; please try again!")
-                    setPageLoad(false) 
-                }
-        })
-            .catch(
-                (err) => {
-                console.log(err)
-                setPageLoad(false) 
-        })
-    }
-
-    // Method to get the details of the email from server
-    const getEmailDetails = (email) => {
+    /**
+     * Utility for getting email details from the server (callback 2)
+     * 
+     */
+    const fetchEmailDetailsFromServer = (email) => {
 
         // Get the url and the body
         const [url, body] = getProfileDetailsURLandBody(email)
 
         fetch(url, body)
-            .then((res) => {
-                if (res.status == 200) {
-                    res.json()
-                        .then((val) => {
-                            setDetails(val)
-                            getAllCompanies(email) 
-                        })
-                        .catch((err) => {
-                            console.log(err)
-                        })
 
-                } else if(res.status == 404) {
-                    alert("ERROR : User Not Found")
-                } else {
-                    throw Error() 
+            .then(
+                (res) => {
+                    if(res.status === 200) {
+                        res.json()
+                            .then(
+                                (details) => {
+                                    setDetails(details)
+                                    fetchAllCompaniesOfPersonFromServer(email)
+                                }
+                            )
+                            .catch(
+                                (err) => {
+                                    console.log(err) 
+                                }
+                            )
+                    } else if(res.status === 404) {
+
+                    } else {
+                        throw Error("SERVER_ERROR")  
+                    }
                 }
-            })
+            )
 
-            .catch((err) => {
-                setPageLoad(false) 
-            })
+            .catch(
+                (err) => {
+                    console.log(err) 
+                }
+            )
     }
 
-    const getAllCompanies = (email) => {
-        fetch("http://localhost:8000/company/all?email=" + email, {
-            method: "GET",
-            credentials: "include"
-        })
-            .then((res) => {
-                if (res.status == 200) {
-                    res.json()
-                        .then((val) => {
-                            setCompanies(val.message)
-                            setPageLoad(true)
-                        })
-                        .catch((err) => {
-                            console.log(err)
-                        })
+    /**
+     * Utility for getting list of all companies (callback 3 & final one)
+     */
+    const fetchAllCompaniesOfPersonFromServer = (email) => {
 
-                } else {
-                    alert("ERROR : Could not fetch details of the person")
+        const [url, body] = getAllCompaniesURLandBody(email)
+
+        fetch(url, body) 
+
+            .then(
+                (res) => {
+                    if(res.status === 200) {
+                        res.json()
+                            .then(
+                                (response) => {
+                                    setCompanies(response.message) 
+                                    setPageLoad(true) 
+                                }
+                            )
+                            .catch(
+                                (err) => {
+                                    console.log(err) 
+                                }
+                            )
+                    } else {
+                        throw Error("SERVER_ERROR")
+                    }
                 }
-            })
+            )
+
+            .catch(
+                (err) => {
+                    console.log(err) 
+                }
+            )
     }
+
+
 
 
     // Method to get age from DOB
@@ -227,7 +255,7 @@ const ProfilePage = () => {
 
     // Get the email of the person if it does
     useEffect(() => {
-        getEmailFromParams()
+        getSessionToken()
     }, [])
 
     return (
@@ -235,7 +263,7 @@ const ProfilePage = () => {
         <ConnectingPage />
         :
         pageLoad === false ?
-        <ConnectionFailedPage />
+        <ConnectionFailedPage callback = {getSessionToken}/>
         :
             
             <Box>

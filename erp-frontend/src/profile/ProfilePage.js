@@ -7,13 +7,12 @@ import Divider from "@mui/material/Divider"
 import Grid from "@mui/material/Grid"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
-import Paper from "@mui/material/Paper"
 
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMoreOutlined"
 
 import { useEffect, useState } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useSearchParams } from "react-router-dom"
 
 import { getAllCompaniesURLandBody, getProfileDetailsURLandBody, getSessionTokenURLandBody } from "../utils/requestHelper"
 
@@ -52,8 +51,6 @@ const ProfilePage = () => {
      * Control variable for controlling the page
      */
     const [pageLoad, setPageLoad] = useState(null)
-    const navigator = useNavigate() 
-
 
     /**
      * Utility for fetching email from URL params 
@@ -294,10 +291,7 @@ const ProfilePage = () => {
                                     <Box display = "flex" mb = {2}>
 
                                         {
-                                            details.isLoggedIn ?
-                                                <CreateCompanyModal />
-                                                :
-                                                <></>
+                                            details.isLoggedIn ? <CreateCompanyModal /> : <></>
                                         }
 
                                     </Box>

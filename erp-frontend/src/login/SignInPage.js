@@ -8,7 +8,9 @@ import Link from "@mui/material/Link"
 
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+
 import { getLoginURLandBody, getSessionTokenURLandBody } from "../utils/requestHelper"
+import ConnectionFailedPage from "../errors/ConnectionFailed"
 
 
 
@@ -149,36 +151,7 @@ const SignInPage = () => {
             </Box>
         :
         loadScreen === false ?
-            <Box
-                sx={{
-                    width: "100%",
-                    height: "90vh",
-                    display: "flex",
-                    flexDirection : 'column',
-                    justifyContent: "center",
-                    alignItems: "center",
-                    bgcolor: "#fafafa",
-                }}
-            >
-                <Box sx={{ display: "flex", gap: 2, flexDirection: 'column', maxWidth : 650}}>
-                    <Typography variant = "h6" color = "text.error" textAlign = "start">
-                        SERVER CONNECTION ERROR:
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary">
-                        We are currently unable to get the token for current session.
-                        Either the server is busy or we are unable to connect to it. 
-                        Please try again after some time. 
-                    </Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Button 
-                    variant = "outlined"
-                    color = "warning"
-                    onClick = {getSessionToken}>
-                        Retry Connection
-                    </Button>
-                </Box>
-            </Box>
+            <ConnectionFailedPage callback = {getSessionToken} />
             :
             <Box sx={{
                 width: '100%',

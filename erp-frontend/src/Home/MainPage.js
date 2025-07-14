@@ -33,7 +33,6 @@ const MainHomePage = () => {
     const [params] = useSearchParams()
     const fetchCompanyFromURL = () => {
         const company = params.get("company")
-
         if (company === null || company.trim() === "") {
             throw Error("INVALID_COMPANY")
         } else {
@@ -84,6 +83,7 @@ const MainHomePage = () => {
     /**
      * Utility for verification of user being in the company 
      */
+    
 
     useEffect(() => getSessionToken(), []) 
 

@@ -207,15 +207,13 @@ const ProfilePage = () => {
                 
                 <Grid container direction="row">
 
-                    <Grid item size={4} sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                    <Grid item size={4} display = "flex" flexDirection = "row" justifyContent = "center" alignItems = "center"
+                    sx={{
                         minHeight: '30vh'
                     }}>
 
-                        <Avatar rounded sx={{
+                        <Avatar rounded 
+                        sx={{
                             height: 100,
                             width: 100
                         }}>
@@ -223,68 +221,57 @@ const ProfilePage = () => {
                         </Avatar>
 
                     </Grid>
+
                     <Divider />
+
                     <Grid item size={8}>
 
-                        <Box sx={{
-                            mt: 4,
-                            ml: 1
-                        }}>
-                            <Typography variant="h4">
+                        <Box mt = {4} ml = {1}>
+
+                            <Typography variant = "h4">
                                 {details.legal_name}
                             </Typography>
 
-                            <Typography variant="h6">
+                            <Typography variant = "h6">
                                 {details.nationality}, {details.gender}, {getAgeFromDOB(details.dob)} years old
                             </Typography>
 
                         </Box>
 
-                        <Box sx={{
-                            mt: 4,
-                            ml: 1
-                        }}>
+                        <Box mt = {4} ml = {1}>
+
                             <Typography variant="h6">
                                 Correspondence:
                             </Typography>
 
-                            <Box sx={{
-                                display: 'flex',
-                                gap: 2
-                            }}>
+                            <Box display = "flex" gap = {2}>
+
                                 <Typography variant="h6">
                                     Email:
                                 </Typography>
 
-                                <TextField
-                                    variant="standard"
-                                    disabled
-                                    defaultValue={details.email}
-
+                                <TextField variant="standard" disabled
+                                defaultValue={details.email}
                                 />
+
                             </Box>
 
-                            <Box sx={{
-                                display: 'flex',
-                                gap: 2
-                            }}>
+                            <Box display = "flex" gap = {2}>
+
                                 <Typography variant="h6">
                                     Phone:
                                 </Typography>
 
-                                <TextField
-                                    variant="standard"
-                                    disabled
-                                    defaultValue={details.phone}
+                                <TextField variant="standard" disabled
+                                defaultValue={details.phone}
                                 />
+
                             </Box>
+
                         </Box>
 
+                        <Box mr = {2}>
 
-                        <Box sx={{
-                            mr: 2,
-
-                        }}>
                             <Accordion>
 
                                 <AccordionSummary
@@ -303,9 +290,7 @@ const ProfilePage = () => {
 
                                 <AccordionDetails>
 
-                                    <Box sx={{
-                                        display: 'flex'
-                                    }}>
+                                    <Box display = "flex">
 
                                         {
                                             details.isLoggedIn ?
@@ -315,11 +300,8 @@ const ProfilePage = () => {
                                         }
 
                                     </Box>
-                                    <Box sx = {{
-                                        display : 'flex',
-                                        flexDirection : 'column',
-                                        gap : 2
-                                    }}>
+
+                                    <Box display =  "flex" flexDirection = "column" gap = {2}>
 
                                         {
                                             companies.map((e, i) => {

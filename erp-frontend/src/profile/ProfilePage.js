@@ -30,6 +30,20 @@ import ConnectionFailedPage from "../errors/ConnectionFailed"
 import ConnectingPage from "../errors/Connecting"
 
 
+// Method to get age from DOB
+const getAgeFromDOB = (dob) => {
+
+    const DOB = new Date(dob)
+    const today = new Date()
+
+    let age = today.getFullYear() - DOB.getFullYear()
+    let m = today.getMonth() - DOB.getMonth()
+    let d = today.getDate() - DOB.getDate()
+
+    if (m < 0 || (m === 0 && d < 0)) {
+        age--
+    } return age
+}
 
 /**
  * Component of the profile page the whole page
@@ -186,24 +200,6 @@ const ProfilePage = () => {
             )
     }
 
-
-
-
-    // Method to get age from DOB
-    const getAgeFromDOB = (dob) => {
-
-        const DOB = new Date(dob)
-        const today = new Date()
-
-        let age = today.getFullYear() - DOB.getFullYear()
-        const m = today.getMonth() - DOB.getMonth()
-        const d = today.getDate() - DOB.getDate()
-
-        if (m < 0 || (m === 0 && d < 0)) {
-            age--
-        } return age
-    }
-
     // Method to handle company creation by user 
     const handleCompanyCreation = () => {
         const payload = {
@@ -250,10 +246,8 @@ const ProfilePage = () => {
 
 
 
-    // Get the email of the person if it does
-    useEffect(() => {
-        getSessionToken()
-    }, [])
+    // Start the page
+    useEffect(() => getSessionToken(), [])
 
     return (
         pageLoad === null ?

@@ -44,8 +44,6 @@ const CreateCompanyModal = (props) => {
             passcode: companyForm.passcode
         }
 
-        console.log(payload)
-
         fetch("http://localhost:8000/company/create", {
             method: "POST",
             headers: {

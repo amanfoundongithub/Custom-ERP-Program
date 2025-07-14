@@ -186,15 +186,6 @@ const SignUpPage = () => {
 
     const submitDetails = () => {
         // Send post request
-        console.log({
-                email: email,
-                phone: String(9013233244),
-                password: password,
-                legal_name: name,
-                dob: new Date(dateOfBirth).toISOString(),
-                gender: gender,
-                nationality: nationality
-            })
         fetch("http://localhost:8000/user/create", {
             method : "POST",
             credentials : "include",
@@ -551,7 +542,6 @@ const StepII = (props) => {
                                     onChange={(e) => {
                                         let val = e.target.value
                                         val = parseInt(val)
-                                        console.log(val)
                                         if(val >= 0 && val < 10) { 
                                             let otp = enteredOTP.split("")
                                             otp[0] = val.toString() 

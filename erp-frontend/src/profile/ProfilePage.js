@@ -17,17 +17,27 @@ import FormControl from "@mui/material/FormControl"
 import InputLabel from "@mui/material/InputLabel"
 import MenuItem from "@mui/material/MenuItem"
 import Select from "@mui/material/Select"
+import Button from "@mui/material/Button"
+import Paper from "@mui/material/Paper"
 
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMoreOutlined"
 
 import { useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import Button from "@mui/material/Button"
-import Paper from "@mui/material/Paper"
+
+import { getProfileDetailsURLandBody, getSessionTokenURLandBody } from "../utils/requestHelper"
 
 
 
+/**
+ * Component of the profile page the whole page
+ * 
+ * URL : /profile?email=<email> & others are not allowed 
+ * 
+ * @author amanfoundongithub
+ * 
+ */
 const ProfilePage = () => {
 
     // URL params 
@@ -49,10 +59,12 @@ const ProfilePage = () => {
     // Method to get session token from the server 
     const getSessionToken = (email) => {
 
-        fetch("http://localhost:8000/session/start", {
-            method: "GET",
-            credentials: "include"
-        })
+        // Get the body and url from the token_request_body 
+        const [url, body] = getSessionTokenURLandBody()
+        
+        // API call to the backend 
+        fetch(url, body) 
+
             .then((res) => {
                 if (res.status == 201) {
                     getEmailDetails(email)
@@ -68,10 +80,10 @@ const ProfilePage = () => {
     // Method to get the details of the email from server
     const getEmailDetails = (email) => {
 
-        fetch("http://localhost:8000/user/details?email=" + email, {
-            method: "GET",
-            credentials: "include"
-        })
+        // Get the url and the body
+        const [url, body] = getProfileDetailsURLandBody(email)
+
+        fetch(url, body)
             .then((res) => {
                 if (res.status == 200) {
                     res.json()

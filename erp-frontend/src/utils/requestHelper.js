@@ -32,3 +32,17 @@ export const getLoginURLandBody = (email, password) => {
     return [url, body]
 }
 
+/**
+ * Resources for getting the profile details for the profile page 
+ */
+export const getProfileDetailsURLandBody = (email) => {
+
+    const url = REQUEST_BASE_URL + "/user/details?email=" + email
+
+    const body = {
+        method : "GET",
+        credentials : "include"
+    }
+
+    return [url, body] 
+}

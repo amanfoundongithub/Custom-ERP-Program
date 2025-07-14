@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom"
 
 import { getLoginURLandBody, getSessionTokenURLandBody } from "../utils/requestHelper"
 import ConnectionFailedPage from "../errors/ConnectionFailed"
+import LinearProgress from "@mui/material/LinearProgress"
 
 
 
@@ -59,6 +60,7 @@ const SignInPage = () => {
     useEffect(() => getSessionToken(), [])
 
     const getSessionToken = () => {
+
         // Set screen in rendering mode
         setLoadScreen(null)
 
@@ -168,6 +170,13 @@ const SignInPage = () => {
                     }}
                 >
                     <Paper elevation={3} sx={{ p: 4, maxWidth: 750, borderRadius: 2 }}>
+                        {
+                            disableButton == true ? 
+                            <LinearProgress color = "success" sx = {{ marginTop : -4, width : '100%'}}/>
+                            :
+                            <></>
+
+                        }
 
                         <Typography variant="h5" fontFamily="monospace" textAlign="center"
                             mb={3}>
@@ -191,6 +200,9 @@ const SignInPage = () => {
                             helperText={
                                 handleEmailValidity() ? "" : "Enter a valid email"
                             }
+                            disabled = {
+                                disableButton == true 
+                            }
                             sx={{
                                 mb: 2
                             }}
@@ -203,6 +215,9 @@ const SignInPage = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             fullWidth
+                            disabled = {
+                                disableButton == true 
+                            }
                             sx={{
                                 mb: 1
                             }}
@@ -222,7 +237,12 @@ const SignInPage = () => {
                         
                         
 
-                        <Button variant = "outlined" color = "success" onClick={loginSystem} fullWidth disabled = {disableButton}>
+                        <Button 
+                        variant = "outlined" 
+                        color = "success" 
+                        onClick={loginSystem} 
+                        fullWidth 
+                        disabled = {disableButton}>
                             Login
                         </Button>
 

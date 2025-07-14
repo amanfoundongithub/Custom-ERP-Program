@@ -144,7 +144,7 @@ const CreateCompanyModal = (props) => {
                     </Box>
                 </Modal>
 
-                <Button onClick={() => setModalOpen(true)}>
+                <Button onClick={() => setModalOpen(true)} variant = "outlined">
                                                     + Create A Company
                                                 </Button>
         </Box>

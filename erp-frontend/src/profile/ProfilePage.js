@@ -20,6 +20,7 @@ import { getAllCompaniesURLandBody, getProfileDetailsURLandBody, getSessionToken
 import ConnectionFailedPage from "../errors/ConnectionFailed"
 import ConnectingPage from "../errors/Connecting"
 import CreateCompanyModal from "./CompanyCreateModal"
+import CompanyCard from "./ShowCompanyCard"
 
 
 // Method to get age from DOB
@@ -290,7 +291,7 @@ const ProfilePage = () => {
 
                                 <AccordionDetails>
 
-                                    <Box display = "flex">
+                                    <Box display = "flex" mb = {2}>
 
                                         {
                                             details.isLoggedIn ?
@@ -304,26 +305,7 @@ const ProfilePage = () => {
                                     <Box display =  "flex" flexDirection = "column" gap = {2}>
 
                                         {
-                                            companies.map((e, i) => {
-                                                console.log(e) 
-                                                return(
-                                                    
-                                                        <Paper elevation = {2}>
-                                                            <Box sx = {{
-                                                                display : 'flex'
-                                                            }}>
-                                                                <Typography variant = "h6">
-                                                                    {e.role} of 
-                                                                </Typography>
-                                                                <Typography variant = "h6" onClick = {() => navigator("/home?company=" + e.name)}>
-                                                                    {e.name}
-                                                                </Typography>
-
-                                                            </Box>
-                                                        </Paper>
-                                                    
-                                                )
-                                            })
+                                            companies.map((e, i) => <CompanyCard details = {e} />)
                                         }
 
                                     </Box>

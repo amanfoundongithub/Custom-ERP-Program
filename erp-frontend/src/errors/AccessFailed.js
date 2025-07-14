@@ -12,9 +12,10 @@ const AccessFailedPage = (props) => {
     const navigator = useNavigate() 
 
     const reasons = [
-        "tried to enter a wrong company, by mistake;",
-        "entered the wrong password for the company;",
-        "are not part of this specific organization;",
+        "tried to enter a wrong company, by mistake; check the URL corresponding to your company, or",
+        "entered the wrong password for the company; retry the password, or",
+        "are not part of this specific organization; contact the administrators for the same, or",
+        "your session has expired; go to sign in page to login again"
     ]
 
     return (

@@ -291,7 +291,7 @@ const ProfilePage = () => {
                                     <Box display = "flex" mb = {2}>
 
                                         {
-                                            details.isLoggedIn ? <CreateCompanyModal /> : <></>
+                                            details.isLoggedIn ? <CreateCompanyModal email = {fetchEmailFromURL()} /> : <></>
                                         }
 
                                     </Box>

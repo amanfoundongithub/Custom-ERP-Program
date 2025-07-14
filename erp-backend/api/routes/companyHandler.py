@@ -151,7 +151,7 @@ async def get_all_companies(email : str,
             }
         )
         
-@router.get("/confirm")
+@router.get("/user/confirm")
 async def confirm_user(company : str, password : str, token_data = Depends(verify_auth_token), user_token_data = Depends(verify_user_token)):
     
     try: 
@@ -182,6 +182,7 @@ async def confirm_user(company : str, password : str, token_data = Depends(verif
                 "name" : company,
             }
         )
+        
         if company_details is None:
             return JSONResponse(
                 status_code = 404,
@@ -190,6 +191,7 @@ async def confirm_user(company : str, password : str, token_data = Depends(verif
                 }
             )
         
+
         # Check if user is part of the access 
         if company_details["CEO"] != email and company_details["CFO"] != email and email not in company_details["members"]:
             return JSONResponse(
@@ -200,13 +202,15 @@ async def confirm_user(company : str, password : str, token_data = Depends(verif
             )
         
         # Compare the passwords
-        if compare_password(password, company_details.get("password")) == False:
+        if compare_password(password, company_details["passcode"]) == False:
             return JSONResponse(
                 status_code = 401,
                 content = {
                     "message" : "INVALID_PASSWORD"
                 }
             )
+        
+        print("here")
         
         return JSONResponse(
             status_code = 200,
@@ -216,6 +220,7 @@ async def confirm_user(company : str, password : str, token_data = Depends(verif
         )
     
     except Exception as e:
+        print(e) 
         return JSONResponse(
             status_code = 500,
             content = {

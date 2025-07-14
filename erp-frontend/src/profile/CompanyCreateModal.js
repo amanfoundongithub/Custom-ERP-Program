@@ -14,6 +14,10 @@ import Typography from "@mui/material/Typography"
 
 import { useState } from "react"
 
+/*
+
+*/
+
 
 const CreateCompanyModal = (props) => {
 
@@ -39,6 +43,8 @@ const CreateCompanyModal = (props) => {
             dateofFounding: companyForm.dateofFounding,
             passcode: companyForm.passcode
         }
+
+        console.log(payload)
 
         fetch("http://localhost:8000/company/create", {
             method: "POST",

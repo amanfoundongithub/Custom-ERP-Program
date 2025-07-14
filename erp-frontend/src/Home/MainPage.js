@@ -9,6 +9,7 @@ import { getSessionTokenURLandBody } from "../utils/requestHelper";
 
 import ConnectionFailedPage from "../errors/ConnectionFailed";
 import ConnectingPage from "../errors/Connecting";
+import AccessFailedPage from "../errors/AccessFailed";
 
 
 
@@ -26,6 +27,7 @@ const MainHomePage = () => {
      * Control variable for controlling the page
      */
     const [pageLoad, setPageLoad] = useState(null)
+    const [isAccessed, setIsAccessed] = useState(true)  
 
     /**
      * Utility for fetching email from URL params 
@@ -61,7 +63,7 @@ const MainHomePage = () => {
                 .then(
                     (res) => {
                         if (res.status === 201) {
-                            setPageLoad(true) 
+                            verifyUserBeingPartofCompany(company)
                         } else {
                             setPageLoad(false)
                         }
@@ -83,7 +85,32 @@ const MainHomePage = () => {
     /**
      * Utility for verification of user being in the company 
      */
-    
+    const verifyUserBeingPartofCompany = (company) => {
+
+        const password = prompt("Server is Up Now. Please enter the passcode to access the company:")
+
+        fetch("http://localhost:8000/company/user/confirm?company=" + company + "&password=" + password, {
+            method : "GET",
+            credentials : "include"
+        }) 
+
+            .then((res) => {
+                if(res.status == 200) {
+                    alert("Success! Access Granted.")
+                    setPageLoad(true) 
+                    setIsAccessed(true)  
+                } else {
+                    alert("Failure! Access Denied.")
+                    setPageLoad(true) 
+                    setIsAccessed(false)  
+                }
+            })
+
+            .catch((err) => {
+                console.log(err) 
+                setPageLoad(false)
+            })
+    }
 
     useEffect(() => getSessionToken(), []) 
 
@@ -94,6 +121,9 @@ const MainHomePage = () => {
         :
         pageLoad === false ?
         <ConnectionFailedPage callback = {getSessionToken}/>
+        :
+        isAccessed === false ?
+        <AccessFailedPage callback = {getSessionToken}/>
         :
         <Box>
             <Box sx={{

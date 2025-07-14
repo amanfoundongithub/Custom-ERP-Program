@@ -173,10 +173,45 @@ async def confirm_user(company : str, password : str, token_data = Depends(verif
                 }
             )
         
+        # 
+        email = user_token_data.get("email")
+        
         # Now confirm the company first
         company_details = await company_collection.find_one(
             {
                 "name" : company,
+            }
+        )
+        if company_details is None:
+            return JSONResponse(
+                status_code = 404,
+                content = {
+                    "message" : "COMPANY_NOT_FOUND"
+                }
+            )
+        
+        # Check if user is part of the access 
+        if company_details["CEO"] != email and company_details["CFO"] != email and email not in company_details["members"]:
+            return JSONResponse(
+                status_code = 403,
+                content = {
+                    "message" : "UNAUTHORIZED_ACCESS_TO_COMPANY" 
+                }
+            )
+        
+        # Compare the passwords
+        if compare_password(password, company_details.get("password")) == False:
+            return JSONResponse(
+                status_code = 401,
+                content = {
+                    "message" : "INVALID_PASSWORD"
+                }
+            )
+        
+        return JSONResponse(
+            status_code = 200,
+            content = {
+                "message" : "OK"
             }
         )
     

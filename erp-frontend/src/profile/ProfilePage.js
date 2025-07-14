@@ -63,6 +63,12 @@ const ProfilePage = () => {
     }
 
     /**
+     * State variables : details & company list 
+     */
+    const [details, setDetails] = useState({})
+    const [companies, setCompanies] = useState([]) 
+
+    /**
      * Utility for getting session token (Callback 1)
      */
     const getSessionToken = () => {
@@ -231,14 +237,6 @@ const ProfilePage = () => {
             })
     }
 
-
-
-
-    /**
-     * State variables 
-     */
-    const [details, setDetails] = useState({})
-    const [companies, setCompanies] = useState([]) 
 
     // Get the details of the company:
     const [modalOpen, setModalOpen] = useState(false)

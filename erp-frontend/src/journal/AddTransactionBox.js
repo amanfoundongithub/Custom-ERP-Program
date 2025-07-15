@@ -91,54 +91,110 @@ const isValid = (list_of_accounts) => {
 
 const AddTransactionButton = (props) => {
 
-    const [params] = useSearchParams() 
-
-
+    /**
+     * Access parameters from the previous parent page
+     */
     let setListofAccNames = props.setListofAccNames
     let listofaccnames = props.listofaccnames
 
-    const navigate = useNavigate()
+
     /**
-     * Accounts
+     * Utility to fetch company name from URL 
+     */
+    const [params] = useSearchParams() 
+    const fetchCompanyFromURL = () => {
+        const company = params.get("company")
+        if (company === null || company.trim() === "") {
+            throw Error("INVALID_COMPANY")
+        } else {
+            return company
+        }
+    }
+
+    /**
+     * Meta-data of transaction: date & description of transaction
+     * 
+     * transactionDate => date of the transaction 
+     * description     => description of the transaction
      */
     const [transactionDate, setDateofTransaction] = useState(findTodayDate())
     const [description, setDescription] = useState("This is a transaction")
 
-    // Controller for getting list of all accounts
+    /**
+     * Main data: 
+     * 
+     * List of debits & credits 
+     * 
+     * list_of_accounts => Accounts list we will consider for sending to the backend
+     */
     const [list_of_accounts, modifyList] = useState([])
 
-    // Temporary list to store the edits 
-    const [edit_list, modifyEditList] = useState([...list_of_accounts])
+    /**
+     * Editing helpers for live preview of edits
+     * 
+     * edit_list => account list that will be displayed to the user as a preview
+     * edit_account => edit access is enabled for the entry or not ? 
+     */
+    const [edit_list, modifyEditList] = useState([])
+    const [edit_account, setEditAccess] = useState([])
 
-    // Controller for controlling the editing of document
-    const [edit_account, setEditAccess] = useState(
-        [
-            false,
-        ]
-    )
+    /**
+     * Helper utility functions for update of the tables 
+     * 
+     * Edit Access (allow/disable)
+     */
 
-    // Allows the index to access edit & disable edit
     const allowEditAccess = (idx) => {
         setEditAccess(access => {
-
-            let updated = [...access]
-            updated[idx] = true
-            return updated;
+            let updated = [...access] 
+            updated[idx] = true 
+            return updated 
         })
     }
 
     const disableEditAccess = (idx) => {
         setEditAccess(access => {
-
             let updated = [...access]
             updated[idx] = false
             return updated;
         })
     }
 
+    /**
+     * Helper utility functions for the table entries
+     */
+    
+    const addEntry = () => {
+        // New account
+        const new_dummy = {
+            "account": "",
+            "typeofAcc": "Debit",
+            "amount": 0.0,
+        }
+
+        // Add this to the list 
+        modifyList([...list_of_accounts, new_dummy])
+
+        // Add to the list
+        modifyEditList([...edit_list, new_dummy])
+
+        // Add access modifier to true
+        setEditAccess([...edit_account, true])
+    }
+
+    const editEntry = (idx, field, value) => {
+        modifyEditList(list => {
+            let updated = [...list]
+            updated[idx] = {
+                ...updated[idx],
+                [field]: value,
+            }
+            return updated
+        })
+    }
+
     const removeEntry = (idx) => {
 
-        // First remove element
         modifyList(list => {
             let updated = [...list]
             updated.splice(idx, 1)
@@ -159,17 +215,6 @@ const AddTransactionButton = (props) => {
         })
     }
 
-    const editEntry = (idx, field, value) => {
-        modifyEditList(list => {
-            let updated = [...list]
-            updated[idx] = {
-                ...updated[idx],
-                [field]: value,
-            }
-            return updated
-        })
-    }
-
     const saveChanges = (idx) => {
         modifyList(list => {
             let updated = [...list]
@@ -179,25 +224,8 @@ const AddTransactionButton = (props) => {
         disableEditAccess(idx)
     }
 
-    // Adding a new row => means add the empty and add the edit accounts access
-    const addNewRow = () => {
-        // New account
-        const new_dummy = {
-            "account": "",
-            "typeofAcc": "Debit",
-            "amount": 0.0,
-        }
 
-        // Add this to the list 
-        modifyList([...list_of_accounts, new_dummy])
-
-        // Add to the list
-        modifyEditList([...list_of_accounts, new_dummy])
-
-        // Add access modifier to true
-        setEditAccess([...edit_account, true])
-    }
-
+    const navigate = useNavigate()
 
     /**
      * Part 2: Confirmation of Transaction
@@ -504,7 +532,7 @@ const AddTransactionButton = (props) => {
                                         <TableRow>
                                             <TableCell colSpan={5}>
                                                 <Button fullWidth
-                                                    onClick={addNewRow}>
+                                                    onClick={addEntry}>
                                                     <Typography variant="subtitle1" textAlign="center">
                                                         + Add New Row
                                                     </Typography>

@@ -1,16 +1,120 @@
 import Box from "@mui/material/Box"
-import CircularProgress from "@mui/material/CircularProgress"
 import Typography from "@mui/material/Typography"
-import React, { useEffect, useState } from "react"
+
+
+import { useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
+
+import { getSessionTokenURLandBody } from "../utils/requestHelper"
+
 import WhatIsAJournalBox from "./JournalInfoBox"
 import AddTransactionBox from "./AddTransactionBox"
 import ViewJournalBox from "./ViewJournalBox"
-import { useNavigate } from "react-router-dom"
 
+import ConnectingPage from "../errors/Connecting"
+import ConnectionFailedPage from "../errors/ConnectionFailed"
+import AccessFailedPage from "../errors/AccessFailed"
+
+/**
+ * Page component of the journal page
+ * 
+ * URL : "/journal?company=<company>" 
+ * 
+ * @author amanfoundongithub
+ * 
+ */
 const JournalPage = () => {
 
-    // Loader spinner to load the page, controller for controlling the behavior
-    const [pageLoaded, setPageLoader] = useState(false)
+    /**
+     * Control variable for controlling the page
+     */
+    const [pageLoad, setPageLoad] = useState(null)
+    const [isAccessed, setIsAccessed] = useState(true)  
+
+    /**
+     * Utility for fetching email from URL params 
+     */
+    const [params] = useSearchParams()
+    const fetchCompanyFromURL = () => {
+        const company = params.get("company")
+        if (company === null || company.trim() === "") {
+            throw Error("INVALID_COMPANY")
+        } else {
+            return company
+        }
+    }
+
+    /**
+     * Utility for getting session token (callback 1)
+     */
+    const getSessionToken = () => {
+
+        try {
+            // Get company from the URL
+            const company = fetchCompanyFromURL() 
+
+            // Set page in loader mode
+            setPageLoad(null)
+
+            // Get the body and url from the token_request_body 
+            const [url, body] = getSessionTokenURLandBody()
+
+            // API call to the backend
+            fetch(url, body)
+
+                .then(
+                    (res) => {
+                        if (res.status === 201) {
+                            verifyUserBeingPartofCompany(company)
+                        } else {
+                            setPageLoad(false)
+                        }
+                    }
+                )
+
+                .catch(
+                    (err) => {
+                        console.log(err)
+                        setPageLoad(false)
+                    }
+                )
+
+        } catch (err) {
+            alert("ERROR: Invalid domain; field 'company' does not exist")
+        }
+    }
+
+    /**
+     * Utility for verification of user being in the company 
+     */
+    const verifyUserBeingPartofCompany = (company) => {
+
+        const password = prompt("Server is Up Now. Please enter the passcode to access the company:")
+
+        fetch("http://localhost:8000/company/user/confirm?company=" + company + "&password=" + password, {
+            method : "GET",
+            credentials : "include"
+        }) 
+
+            .then((res) => {
+                if(res.status === 200) {
+                    alert("Success! Access Granted.")
+                    setPageLoad(true) 
+                    setIsAccessed(true)  
+                } else {
+                    alert("Failure! Access Denied.")
+                    setPageLoad(true) 
+                    setIsAccessed(false)  
+                }
+            })
+
+            .catch((err) => {
+                console.log(err) 
+                setPageLoad(false)
+            })
+    }
+
+    useEffect(() => getSessionToken(), []) 
 
     // Get list of all the accounts if possible
     const [listofaccnames, setListofAccNames] = useState([
@@ -19,77 +123,18 @@ const JournalPage = () => {
 
     const navigateTo = useNavigate() 
 
-    // Function to connect to server, takes the access token
-    const attemptConnection = () => {
-        fetch("http://localhost:8000/session/start", {
-            method : "GET",
-            credentials : "include",
-        })
-        .then((res) => {
-            if(res.status == 201) {
-                // If my connection is deemed successful, I want to ensure that the token works
-                verifyUserToken() 
-            } else {
-                setPageLoader(false) 
-                alert("ERROR : Connection to Server failed")
-            }
-        })
-        .catch((err)=> {
-            console.log(err) 
-        })
-    }
-
-    const verifyUserToken = () => {
-        const password = prompt("Server is live now, you need to enter passcode for the company:")
-        if(password === null) {
-            alert("ERROR: Unauthorized access without passcode not allowed")
-            navigateTo("/auth/signin")
-        }
-
-        fetch("http://localhost:8000/user/token/verify", {
-            method : "GET",
-            credentials : "include"
-        }) 
-        .then((res) => {
-            if(res.status == 200) {
-                setTimeout(() => {
-                    setPageLoader(true)
-                }, 3000) 
-            } else {
-                alert("ERROR : You are either not logged in or your session has expired!")
-                navigateTo("/auth/signup")
-            }
-        })
-    }
-
-    // Loading the page 
-    useEffect(() => {
-        // 
-        attemptConnection() 
-    }, [])
-
     // List of transactions i want to show? 
     return (
-        pageLoaded == false ?
-            <Box sx={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                mt : 4
-            }} gap={1}>
-
-                
-                    <CircularProgress />
-                    <Typography variant="subtitle1">
-                        Please wait while we load the journal page...
-                    </Typography>
-          
-
-
-            </Box>
-            :
+        pageLoad === null ?
+        <ConnectingPage />
+        :
+        pageLoad === false ?
+        <ConnectionFailedPage callback = {getSessionToken}/>
+        :
+        isAccessed === false ?
+        <AccessFailedPage callback = {getSessionToken}/>
+        :
+            
             <Box sx={{
                 width: '100%',
                 height: '100%',

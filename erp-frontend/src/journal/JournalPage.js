@@ -143,7 +143,7 @@ const JournalPage = () => {
             }} gap={1}>
 
                 <Typography variant="h4" textAlign="center" mt={1}>
-                    Welcome to the Journal Portal!
+                    {fetchCompanyFromURL()}'s Journal Portal
                 </Typography>
 
 
@@ -153,9 +153,7 @@ const JournalPage = () => {
                     display: 'flex',
                     flexDirection: 'row',
                 }}>
-                    {/**
-                     * This is the box that is used to show the details 
-                     */}
+                    
                     <Box sx={{
                         width: '100%',
                         height: '100%',
